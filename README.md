@@ -1,253 +1,75 @@
-# SaaS Pegasus Django Boilerplate (Open Source Edition)
+# UpCheck
 
-**The original SaaS boilerplate for Django — trusted by thousands.**
+**Lightweight uptime monitoring for your sites and APIs — and a complete, deployable demo of running a Django SaaS on Kubernetes.**
 
-A free, open-source, production-grade starting point for your next Django application. Spin up a
-Django app with a modern front-end stack and built-in essentials in minutes.
-Optimized for building in the AI-agent era.
+UpCheck is a small but real SaaS: users sign up, add URL monitors, and Celery
+workers check them on a schedule. Dashboards show response times and uptime;
+each monitor can expose a public status page. Subscriptions (Free vs. Pro
+tiers) are handled by [Polar.sh](https://polar.sh) via
+[django-polar-sh](https://github.com/mitja/django-polar-sh).
 
-This is the **open-source edition** of [SaaS Pegasus](https://www.saaspegasus.com/), the Django SaaS
-boilerplate that has powered thousands of startups and products since 2019.
-It gives you a real, batteries-included foundation to build on, and a taste of the architecture,
-conventions, and tooling used by SaaS Pegasus projects.
+It exists for two reasons:
 
-> **Looking for more?**
-> The pro version of SaaS Pegasus adds Stripe subscriptions, teams &
-> multi-tenancy, a host of AI and agent-based capabilities, one-click deployments, and much more.
-> **[See everything in SaaS Pegasus Pro →](https://www.saaspegasus.com/)**
+1. To be genuinely useful for monitoring a handful of sites.
+2. To demonstrate, end to end, how to deploy a Django SaaS (web + Celery
+   worker + beat + Postgres + Redis) on Kubernetes — locally on
+   [kind](https://kind.sigs.k8s.io/) and in production on a managed cluster
+   such as [PAASBOX](https://paasbox.com).
 
-## What's included
+## Built on SaaS Pegasus (open-source edition)
 
-This boilerplate ships with a complete, modern Django foundation:
+This project is built on the
+[SaaS Pegasus Django boilerplate](https://github.com/saaspegasus/django-boilerplate)
+(MIT) by Cory Zue / Elodin Labs — the open-source edition of
+[SaaS Pegasus](https://www.saaspegasus.com/). The boilerplate provides the
+foundation (Django 6, allauth authentication, HTMX + Alpine.js, Tailwind CSS 4
++ DaisyUI via Vite, DRF API, Celery, tooling); UpCheck adds the uptime-monitor
+domain app, Polar.sh billing, a production Dockerfile, and Kubernetes
+manifests. Upstream history is preserved in this repo (`upstream` remote), so
+attribution lives in the git log as well as here.
 
-- 🐍 **Django 6 on Python 3.14** — a clean, well-organized project structure following Django best practices.
-- 🔐 **Authentication** — sign-up, login, password reset, and email verification via [django-allauth](https://docs.allauth.org/).
-- ⚡ **HTMX + Alpine.js** — single-page-app interactivity without the single-page-app complexity.
-- 🎨 **Tailwind CSS v4 + DaisyUI** — a modern, themeable component library, integrated with [Vite](https://vite.dev/) via [django-vite](https://github.com/MrBin99/django-vite).
-- 🔌 **REST API** — built on [Django REST Framework](https://www.django-rest-framework.org/) with an auto-generated, OpenAPI-typed client.
-- 🧵 **Background tasks** — [Celery](https://docs.celeryq.dev/) workers and scheduled jobs, backed by Redis.
-- 🐘 **Postgres** — the standard Django database, ready to go.
-- 🐳 **Docker** — local services (Postgres, Redis) wired up with Docker Compose.
-- 🛠️ **Tooling** — Uv for Python, Vite for front end, Ruff formatting/linting, pre-commit hooks, a test suite, and GitHub Actions CI.
-- 🤖 **Agent-ready** — ships with `CLAUDE.md`/`AGENTS.md` and built-in skills files, so coding agents understand how to work with the codebase out of the box.
+If you're building a business-grade SaaS, look at
+[SaaS Pegasus Pro](https://www.saaspegasus.com/) — it adds teams, Stripe
+billing, AI tooling, one-click deploys, and more.
 
-## Custom codebase creator
+## Features
 
-You can create a free, personalized version of this project using the [SaaS Pegasus codebase creator](https://www.saaspegasus.com/projects/)
-(requires signup). This lets you change project details, add/remove features, and change your preferred coding assistant.
-You'll also get one-click upgrades and tools for coding agents to configure your project for you.
+- **Monitors** — add HTTP(S) URLs, choose a check interval (1–60 min), pause/resume.
+- **Checks** — Celery beat dispatches due checks every minute; workers record
+  status, latency, and errors; results are pruned after 7 days.
+- **Dashboard** — live status badges, 24h uptime, response-time charts
+  (Chart.js), HTMX-refreshed tables.
+- **Public status pages** — share `/s/<slug>` per monitor, no login required.
+- **Plans** — Free (2 monitors, ≥5-min interval) and Pro (5 monitors, 1-min
+  interval) via Polar.sh subscriptions.
+- **Guardrails** — private/internal targets are refused (SSRF guard), per-plan
+  monitor caps and interval floors.
 
-Don't need customizations? That's fine too, just fork this project and start coding!
+## Local development
 
-## Open-source edition vs. SaaS Pegasus Pro
-
-This repo is a great way to start hobby/personal Django projects and evaluate SaaS Pegasus.
-The pro version is more suitable for business-grade SaaS and AI applications.
-
-| Feature | This repo | SaaS Pegasus Pro |
-| --- | :---: | :---: |
-| Django + Postgres + Celery foundation | ✅ | ✅ |
-| Authentication (allauth) | ✅ | ✅ |
-| REST API (DRF) | ✅ | ✅ |
-| Tailwind + DaisyUI + vite front end | ✅ | ✅ |
-| Docker & CI | ✅ | ✅ |
-| **Stripe subscriptions & billing** | — | ✅ |
-| **Teams & multi-tenancy** | — | ✅ |
-| **Built-in AI chat/agent app** | — | ✅ |
-| **One-click production deployment** (Render, Fly, Heroku, GCP, AWS…) | — | ✅ |
-| **Social & 2FA login, API keys, user impersonation** | — | ✅ |
-| **Dedicated support & priority fixes** | Community | ✅ |
-
-**[Check out SaaS Pegasus Pro →](https://www.saaspegasus.com/)**
-
----
-
-## Quickstart
-
-### Prerequisites
-
-To run the app in the recommended configuration, you will need the following installed:
-- [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install)
-- [uv](https://docs.astral.sh/uv/getting-started/installation/) (for Python)
-- [node and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) (for JavaScript)
-
-On Windows, you will also need to install `make`, which you can do by
-[following these instructions](https://stackoverflow.com/a/57042516/8207).
-
-### Initial setup
-
-Run the following command to initialize your application:
+Prerequisites: Docker (or [OrbStack](https://orbstack.dev)), [uv](https://docs.astral.sh/uv/), Node.js 22+.
 
 ```bash
-make init
+cp .env.example .env   # adjust ports if 5432/6379/8000 are taken
+make init              # start Postgres+Redis containers, migrate, npm install
+make dev               # Django dev server + Vite dev server
+make celery            # in a second terminal: Celery worker + beat
 ```
 
-This will:
+App: http://localhost:8000 (or your `DJANGO_PORT`).
 
-- Build and run your Postgres database
-- Build and run your Redis database
-- Run your database migrations
-- Install front end dependencies
+Other useful targets: `make test`, `make migrate`, `make manage ARGS="..."`,
+`make ruff`. Run `make` to list them all.
 
-Then you can start the app:
+## Deploying on Kubernetes
 
-```bash
-make dev
-```
-
-This will run your Django server and build and run your front end (JavaScript and CSS) pipeline.
-
-Your app should now be running! You can open it at [localhost:8000](http://localhost:8000/).
-
-If you're just getting started, [try these steps next](https://docs.saaspegasus.com/getting-started/#post-installation-steps).
-
-## Using the Makefile
-
-You can run `make` to see other helper functions, and you can view the source
-of the file in case you need to run any specific commands.
-
-## Installation - Native
-
-You can also install/run the app directly on your OS using the instructions below.
-
-You can setup a virtual environment and install dependencies in a single command with:
-
-```bash
-uv sync
-```
-
-This will create your virtual environment in the `.venv` directory of your project root.
-
-## Set up database
-
-*If you are using Docker you can skip these steps.*
-
-Create a database named `project`.
-
-```
-createdb project
-```
-
-Create database migrations:
-
-```
-uv run manage.py makemigrations
-```
-
-Create database tables:
-
-```
-uv run manage.py migrate
-```
-
-## Running server
-
-```bash
-uv run manage.py runserver
-```
-
-## Building front-end
-
-To build JavaScript and CSS files, first install npm packages:
-
-```bash
-npm install
-```
-
-Then build (and watch for changes locally):
-
-```bash
-npm run dev
-```
-
-## Running Celery
-
-Celery can be used to run background tasks.
-
-Celery requires [Redis](https://redis.io/) as a message broker, so make sure
-it is installed and running.
-
-You can run it using:
-
-```bash
-celery -A project worker -l INFO --pool=solo
-```
-
-Or with celery beat (for scheduled tasks):
-
-```bash
-celery -A project worker -l INFO -B --pool=solo
-```
-
-Note: Using the `solo` pool is recommended for development but not for production.
-
-## Installing Git commit hooks
-
-To install the Git commit hooks run the following:
-
-```shell
-uv run pre-commit install --install-hooks
-```
-
-Once these are installed they will be run on every commit.
-
-For more information see the [docs](https://docs.saaspegasus.com/code-structure#code-formatting).
-
-## Running Tests
-
-To run tests:
-
-**Using make:**
-
-```bash
-make test
-```
-
-**Native:**
-
-```bash
-uv run manage.py test
-```
-
-Or to test a specific app/module:
-
-**Using make:**
-
-```bash
-make test ARGS='apps.web.tests.test_basic_views --keepdb'
-```
-
-**Native:**
-
-```bash
-uv run manage.py test apps.web.tests.test_basic_views --keepdb
-```
-
-On Linux-based systems you can watch for changes using the following:
-
-```bash
-find . -name '*.py' | entr uv run manage.py test apps.web.tests.test_basic_views
-```
-
----
-
-## Documentation
-
-This project is built with [SaaS Pegasus](https://www.saaspegasus.com/), and all relevant parts of the
-[Pegasus documentation](https://docs.saaspegasus.com/) apply here too.
-
-Splitting out the open-source documentation from the pro documentation is still a work in progress.
-
-## Support
-
-This open-source edition is provided as-is, and is supported by the community. Issues and pull
-requests are welcome.
-
-For dedicated support, priority bug fixes, and the full feature set, check out
-[SaaS Pegasus](https://www.saaspegasus.com/).
-There is also a community Slack instance for all Pegasus Pro customers.
+See [`deploy/`](deploy/) for Kustomize manifests (CloudNativePG Postgres,
+Redis, web/worker/beat Deployments, migrate Job) with overlays for local kind
+and for a production cluster, plus [`scripts/kind-up.sh`](scripts/) for a
+one-command local bring-up. A full walkthrough — including creating a managed
+cluster on PAASBOX and going live with TLS — ships with the manifests.
 
 ## License
 
-This boilerplate is released under the [MIT License](./LICENSE) — free to use for personal and
-commercial projects.
+MIT — see [LICENSE](LICENSE). Original boilerplate copyright
+Elodin Labs LLC (SaaS Pegasus); UpCheck modifications copyright Mitja Martini.

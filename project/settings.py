@@ -275,7 +275,7 @@ FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # default email used by your server
 SERVER_EMAIL = env("SERVER_EMAIL", default="noreply@localhost:8000")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="hello@saaspegasus.com")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@upcheck.paasbox.com")
 
 # The default value will print emails to the console, but you can change that here
 # and in your environment.
@@ -291,7 +291,7 @@ EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.
 # see https://github.com/anymail/django-anymail for more details/examples
 # EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
 
-EMAIL_SUBJECT_PREFIX = "[Django Boilerplate] "
+EMAIL_SUBJECT_PREFIX = "[UpCheck] "
 
 # Django sites
 
@@ -310,8 +310,8 @@ REST_FRAMEWORK = {
 
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Django Boilerplate",
-    "DESCRIPTION": "The original SaaS Boilerplate for Django, trusted by thousands.",  # noqa: E501
+    "TITLE": "UpCheck API",
+    "DESCRIPTION": "Uptime monitoring for your sites and APIs.",  # noqa: E501
     "VERSION": "0.1.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {
@@ -355,18 +355,18 @@ SCHEDULED_TASKS: dict[str, Any] = {
 
 # replace any values below with specifics for your project
 PROJECT_METADATA = {
-    "NAME": gettext_lazy("Django Boilerplate"),
-    "URL": "http://localhost:8000",
-    "DESCRIPTION": gettext_lazy("The original SaaS Boilerplate for Django, trusted by thousands."),  # noqa: E501
+    "NAME": gettext_lazy("UpCheck"),
+    "URL": "http://localhost:8001",
+    "DESCRIPTION": gettext_lazy("Lightweight uptime monitoring for your sites and APIs — know the moment things go down."),  # noqa: E501
     "IMAGE": "https://upload.wikimedia.org/wikipedia/commons/2/20/PEO-pegasus_black.svg",
-    "KEYWORDS": "SaaS, django",
-    "CONTACT_EMAIL": "hello@saaspegasus.com",
+    "KEYWORDS": "uptime, monitoring, SaaS, django",
+    "CONTACT_EMAIL": "mitja.martini@gmail.com",
 }
 
 # set this to True in production to have URLs generated with https instead of http
 USE_HTTPS_IN_ABSOLUTE_URLS = env.bool("USE_HTTPS_IN_ABSOLUTE_URLS", default=False)
 
-ADMINS = ["hello@saaspegasus.com"]
+ADMINS = ["mitja.martini@gmail.com"]
 
 # Add your google analytics ID to the environment to connect to Google Analytics
 GOOGLE_ANALYTICS_ID = env("GOOGLE_ANALYTICS_ID", default="")
