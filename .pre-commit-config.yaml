@@ -8,6 +8,8 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-yaml
+        # Kubernetes manifests in deploy/ are multi-document files
+        args: ["--allow-multiple-documents"]
       - id: check-merge-conflict
       - id: check-added-large-files
       - id: end-of-file-fixer
