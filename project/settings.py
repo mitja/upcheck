@@ -278,7 +278,8 @@ FORMS_URLFIELD_ASSUME_HTTPS = True
 
 # default email used by your server
 SERVER_EMAIL = env("SERVER_EMAIL", default="noreply@localhost:8000")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@upcheck.paasbox.com")
+# mg. subdomain: the apex domains stay free for personal/functional mailboxes.
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@mg.upcheck.paasbox.com")
 
 # The default value will print emails to the console, but you can change that here
 # and in your environment.
