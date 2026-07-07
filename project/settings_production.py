@@ -1,44 +1,66 @@
-# flake8: noqa: F405
-from .settings import *  # noqa F401
+"""Production settings: env-driven, container-friendly.
 
-# Note: it is recommended to use the "DEBUG" environment variable to override this value in your main settings.py file.
-# A future release may remove it from here.
+Everything security-relevant is explicit here; the base settings' permissive
+defaults (DEBUG=True, ALLOWED_HOSTS=*) never reach production. TLS terminates
+at the ingress, so HTTPS handling keys off X-Forwarded-Proto —
+SECURE_SSL_REDIRECT stays env-toggleable for plain-HTTP environments
+(local kind via port-forward).
+"""
+
+from .settings import *  # noqa: F403
+
 DEBUG = False
 
-# fix ssl mixed content issues
+SECRET_KEY = env("SECRET_KEY")  # noqa: F405 — required, no insecure fallback
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")  # noqa: F405
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # noqa: F405
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)  # noqa: F405
+SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
+CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
+# Increase once you're confident everything works (https://stackoverflow.com/a/49168623/8207)
+SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS", default=3600) if SECURE_SSL_REDIRECT else 0  # noqa: F405
+USE_HTTPS_IN_ABSOLUTE_URLS = SECURE_SSL_REDIRECT
 
-# Django security checklist settings.
-# More details here: https://docs.djangoproject.com/en/stable/howto/deployment/checklist/
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+# The base settings evaluate `if DEBUG:` at import time with the env default
+# (True), which pulls in dev-only pieces. Strip them — the packages aren't
+# installed in the production image.
+if "django_browser_reload" in INSTALLED_APPS:  # noqa: F405
+    INSTALLED_APPS.remove("django_browser_reload")  # noqa: F405
+if "django_browser_reload.middleware.BrowserReloadMiddleware" in MIDDLEWARE:  # noqa: F405
+    MIDDLEWARE.remove("django_browser_reload.middleware.BrowserReloadMiddleware")  # noqa: F405
+# (underscore names don't survive `import *` — restate the cached loaders)
+TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa: F405
+    (
+        "django.template.loaders.cached.Loader",
+        [
+            "django.template.loaders.filesystem.Loader",
+            "django.template.loaders.app_directories.Loader",
+        ],
+    )
+]
 
-# HTTP Strict Transport Security settings
-# Without uncommenting the lines below, you will get security warnings when running ./manage.py check --deploy
-# https://docs.djangoproject.com/en/stable/ref/middleware/#http-strict-transport-security
+# Static files: WhiteNoise straight from gunicorn — no nginx sidecar.
+# collectstatic runs at image build time (see Dockerfile).
+MIDDLEWARE.insert(  # noqa: F405
+    MIDDLEWARE.index("django.middleware.security.SecurityMiddleware") + 1,  # noqa: F405
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+)
+STORAGES["staticfiles"]["BACKEND"] = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # noqa: F405
 
-# # Increase this number once you're confident everything works https://stackoverflow.com/a/49168623/8207
-# SECURE_HSTS_SECONDS = 60
-# # Uncomment these two lines if you are sure that you don't host any subdomains over HTTP.
-# # You will get security warnings if you don't do this.
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
+# Vite assets are prebuilt into the image; never talk to a dev server.
+DJANGO_VITE["default"]["dev_mode"] = False  # noqa: F405
 
-USE_HTTPS_IN_ABSOLUTE_URLS = True
+CACHES = {"default": REDIS_CACHE}  # noqa: F405
 
-# If you don't want to use environment variables to set production hosts you can add them here
-# ALLOWED_HOSTS = ["example.com"]
+PROJECT_METADATA["URL"] = env("PROJECT_URL", default="https://upcheck.paasbox.com")  # noqa: F405
 
-# Your email config goes here.
-# see https://github.com/anymail/django-anymail for more details / examples
-# To use mailgun, uncomment the lines below and make sure your key and domain
-# are available in the environment.
-# EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-
-# ANYMAIL = {
-#     "MAILGUN_API_KEY": env("MAILGUN_API_KEY", default=None),
-#     "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default=None),
-# }
-
-ADMINS = ["hello@saaspegasus.com"]
+# Console email unless Mailgun credentials are provided.
+# See https://github.com/anymail/django-anymail for other providers.
+if env("MAILGUN_API_KEY", default=""):  # noqa: F405
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    ANYMAIL = {
+        "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),  # noqa: F405
+        "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default=None),  # noqa: F405
+    }

@@ -82,6 +82,7 @@ dependencies = [
     "psycopg",
     "redis",
     "requests>=2.34.2",
+    "whitenoise>=6.12.0",
 ]
 
 [dependency-groups]
@@ -99,5 +100,6 @@ dev = [
 ]
 prod = [
     "gunicorn",
-    "psycopg[c]",
+    # binary wheels: no compiler toolchain needed in the Docker image
+    "psycopg[binary]",
 ]
