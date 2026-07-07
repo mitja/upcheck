@@ -1,0 +1,53 @@
+# Celery beat — the scheduler (DatabaseScheduler reads the PeriodicTask rows
+# created by `manage.py bootstrap_celery_tasks`, which the migrate Job runs).
+# Strictly one replica: two beats would double-dispatch every check.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat
+  labels:
+    app: upcheck
+    component: beat
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # never two beats during a rollout
+  selector:
+    matchLabels:
+      app: upcheck
+      component: beat
+  template:
+    metadata:
+      labels:
+        app: upcheck
+        component: beat
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: beat
+          image: ghcr.io/mitja/upcheck:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - celery
+            - -A
+            - project
+            - beat
+            - -l
+            - INFO
+            - --scheduler
+            - django_celery_beat.schedulers:DatabaseScheduler
+          envFrom:
+            - configMapRef: { name: upcheck-config }
+            - secretRef: { name: upcheck-secrets }
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: pg-app, key: uri }
+          resources:
+            requests:
+              cpu: 50m
+              memory: 192Mi
+            limits:
+              memory: 384Mi

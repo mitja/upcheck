@@ -1,0 +1,36 @@
+# Local kind overlay: locally-built image, plain HTTP via port-forward,
+# dev-grade secret. Entry point: kubectl -n upcheck port-forward svc/web 8080:8000
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Repeated here so overlay-generated resources (the secret below) land in the
+# app namespace too — generators don't inherit the base's namespace transformer.
+namespace: upcheck
+
+resources:
+  - ../../base
+
+images:
+  - name: ghcr.io/mitja/upcheck
+    newName: upcheck # `docker build -t upcheck:dev . && kind load docker-image upcheck:dev`
+    newTag: dev
+
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: upcheck-config
+      data:
+        ALLOWED_HOSTS: "*"
+        CSRF_TRUSTED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+        SECURE_SSL_REDIRECT: "false"
+
+# Dev-only secret. Real deployments create `upcheck-secrets` out-of-band —
+# never commit production values.
+secretGenerator:
+  - name: upcheck-secrets
+    literals:
+      - SECRET_KEY=kind-only-dev-secret-key-do-not-use-in-production
+generatorOptions:
+  disableNameSuffixHash: true # stable name: the standalone migrate Job references it

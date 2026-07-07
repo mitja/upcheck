@@ -1,0 +1,69 @@
+# Single Redis: celery broker/result backend + Django cache.
+# AOF persistence on a small PVC so scheduled/queued tasks survive restarts.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: upcheck
+    component: redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate # RWO volume — never two pods at once
+  selector:
+    matchLabels:
+      app: upcheck
+      component: redis
+  template:
+    metadata:
+      labels:
+        app: upcheck
+        component: redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ["redis-server", "--appendonly", "yes"]
+          ports:
+            - name: redis
+              containerPort: 6379
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: upcheck
+    component: redis
+spec:
+  selector:
+    app: upcheck
+    component: redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis

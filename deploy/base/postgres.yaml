@@ -1,0 +1,27 @@
+# PostgreSQL via CloudNativePG (https://cloudnative-pg.io).
+# The operator must be installed once per cluster (see scripts/kind-up.sh or
+# the deploy walkthrough). CNPG generates a `pg-app` Secret containing a ready
+# `uri` (postgresql://upcheck:…@pg-rw.upcheck:5432/upcheck) that the app
+# consumes as DATABASE_URL.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: pg
+spec:
+  instances: 1
+  # A zero-eviction PDB would block node drains and protects nothing with a
+  # single replica. Re-enable (default) if instances > 1.
+  enablePDB: false
+  bootstrap:
+    initdb:
+      database: upcheck
+      owner: upcheck
+  storage:
+    size: 2Gi
+    # storageClass: set per overlay (kind uses the default provisioner)
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi

@@ -1,0 +1,25 @@
+# Ingress with cert-manager-managed TLS (HTTP-01 via the ingress-shim
+# annotation). Point a DNS A record at the ingress-nginx LoadBalancer IP:
+#   kubectl -n ingress-nginx get svc ingress-nginx-controller
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: upcheck
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [upcheck.paasbox.com]
+      secretName: upcheck-tls
+  rules:
+    - host: upcheck.paasbox.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  name: http

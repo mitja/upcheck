@@ -1,0 +1,82 @@
+# Production overlay for a PAASBOX (Gardener-on-Hetzner) shoot cluster.
+# Prerequisites on the cluster (see the deploy walkthrough in the README):
+#   - CloudNativePG operator
+#   - ingress-nginx (Service type LoadBalancer -> Hetzner LB via cloud-controller)
+#   - cert-manager + a ClusterIssuer named letsencrypt-prod
+#   - Secret `upcheck-secrets` created out-of-band:
+#       kubectl -n upcheck create secret generic upcheck-secrets \
+#         --from-literal=SECRET_KEY=... \
+#         --from-literal=POLAR_ACCESS_TOKEN=... \
+#         --from-literal=POLAR_WEBHOOK_SECRET=... \
+#         --from-literal=POLAR_PRODUCT_ID_PRO=... \
+#         --from-literal=POLAR_CHECKOUT_URL_PRO=...
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: upcheck
+
+resources:
+  - ../../base
+  - ingress.yaml
+
+images:
+  - name: ghcr.io/mitja/upcheck
+    newTag: latest # pin to a sha-<commit> tag for reproducible deploys
+
+patches:
+  - patch: |-
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: upcheck-config
+      data:
+        ALLOWED_HOSTS: upcheck.paasbox.com
+        CSRF_TRUSTED_ORIGINS: https://upcheck.paasbox.com
+        SECURE_SSL_REDIRECT: "true"
+  - patch: |-
+      apiVersion: postgresql.cnpg.io/v1
+      kind: Cluster
+      metadata:
+        name: pg
+      spec:
+        storage:
+          size: 2Gi
+          storageClass: hcloud-volumes
+  - patch: |-
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: redis-data
+      spec:
+        storageClassName: hcloud-volumes
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web
+      spec:
+        replicas: 2
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web
+      spec:
+        template:
+          spec:
+            containers:
+              - name: web
+                readinessProbe:
+                  httpGet:
+                    path: /
+                    port: http
+                    httpHeaders:
+                      - { name: Host, value: upcheck.paasbox.com }
+                      - { name: X-Forwarded-Proto, value: https }
+                livenessProbe:
+                  httpGet:
+                    path: /
+                    port: http
+                    httpHeaders:
+                      - { name: Host, value: upcheck.paasbox.com }
+                      - { name: X-Forwarded-Proto, value: https }

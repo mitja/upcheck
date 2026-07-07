@@ -1,0 +1,16 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: upcheck
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - redis.yaml
+  - web.yaml
+  - worker.yaml
+  - beat.yaml
+# NOTE: the migrate Job is deliberately NOT part of this kustomization.
+# Jobs are immutable — apply it explicitly per release (see scripts/ and the
+# per-overlay migrate-job.yaml), delete-then-apply.

@@ -1,0 +1,82 @@
+# Web: gunicorn + WhiteNoise (static collected at image build) — no nginx.
+# Migrations are NOT run here; they run as a one-off Job before the app rolls
+# (see the per-overlay migrate-job.yaml). With no in-pod migrate, web scales
+# freely.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels:
+    app: upcheck
+    component: web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upcheck
+      component: web
+  template:
+    metadata:
+      labels:
+        app: upcheck
+        component: web
+    spec:
+      securityContext:
+        runAsUser: 1000 # the image's `django` user
+        runAsGroup: 1000
+      containers:
+        - name: web
+          image: ghcr.io/mitja/upcheck:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8000
+          envFrom:
+            - configMapRef: { name: upcheck-config }
+            - secretRef: { name: upcheck-secrets }
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: pg-app, key: uri }
+          # Probe with a real Host (must be in ALLOWED_HOSTS — "*" on kind) and
+          # X-Forwarded-Proto so SECURE_SSL_REDIRECT doesn't 301 the kubelet.
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+              httpHeaders:
+                - { name: Host, value: upcheck.example.com }
+                - { name: X-Forwarded-Proto, value: https }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+              httpHeaders:
+                - { name: Host, value: upcheck.example.com }
+                - { name: X-Forwarded-Proto, value: https }
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  labels:
+    app: upcheck
+    component: web
+spec:
+  selector:
+    app: upcheck
+    component: web
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http

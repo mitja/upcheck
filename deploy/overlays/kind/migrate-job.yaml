@@ -1,0 +1,39 @@
+# One-off migrate Job (kind). Jobs are immutable — delete before re-applying:
+#   kubectl -n upcheck delete job upcheck-migrate --ignore-not-found
+#   kubectl apply -f deploy/overlays/kind/migrate-job.yaml
+# Keep the image in sync with the kustomization's images override.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: upcheck-migrate
+  namespace: upcheck
+  labels:
+    app: upcheck
+    component: migrate
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: upcheck
+        component: migrate
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: migrate
+          image: upcheck:dev
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - python manage.py migrate --noinput && python manage.py bootstrap_celery_tasks
+          envFrom:
+            - configMapRef: { name: upcheck-config }
+            - secretRef: { name: upcheck-secrets }
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: pg-app, key: uri }

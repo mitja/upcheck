@@ -1,0 +1,13 @@
+# Non-secret app configuration. Overlays patch the host-specific values.
+# DATABASE_URL is NOT here — it comes from the CNPG-generated `pg-app` Secret
+# (see web.yaml/worker.yaml/beat.yaml env sections).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upcheck-config
+data:
+  DJANGO_SETTINGS_MODULE: project.settings_production
+  ALLOWED_HOSTS: upcheck.example.com
+  CSRF_TRUSTED_ORIGINS: https://upcheck.example.com
+  SECURE_SSL_REDIRECT: "true"
+  REDIS_URL: redis://redis:6379/0
