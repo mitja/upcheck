@@ -31,7 +31,7 @@ if "django_browser_reload" in INSTALLED_APPS:  # noqa: F405
 if "django_browser_reload.middleware.BrowserReloadMiddleware" in MIDDLEWARE:  # noqa: F405
     MIDDLEWARE.remove("django_browser_reload.middleware.BrowserReloadMiddleware")  # noqa: F405
 # (underscore names don't survive `import *` — restate the cached loaders)
-TEMPLATES[0]["OPTIONS"]["loaders"] = [  # noqa: F405
+TEMPLATES[0]["OPTIONS"]["loaders"] = [  # type: ignore[index]  # noqa: F405
     (
         "django.template.loaders.cached.Loader",
         [
