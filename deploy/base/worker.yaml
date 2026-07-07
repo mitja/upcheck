@@ -25,7 +25,10 @@ spec:
         - name: worker
           image: ghcr.io/mitja/upcheck:latest
           imagePullPolicy: IfNotPresent
-          command: ["celery", "-A", "project", "worker", "-l", "INFO", "--concurrency", "2"]
+          # Threads pool: checks are I/O-bound (HTTP waits). A concurrency-2
+          # prefork worker saturates once a few % of targets are slow/timing
+          # out; 16 threads stay in one process and fit the memory limit.
+          command: ["celery", "-A", "project", "worker", "-l", "INFO", "--pool", "threads", "--concurrency", "16"]
           envFrom:
             - configMapRef: { name: upcheck-config }
             - secretRef: { name: upcheck-secrets }

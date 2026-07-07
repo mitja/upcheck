@@ -1,0 +1,53 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% block body %}
+<section class="section mt-7">
+  <div class="container">
+    <div class="prose dark:prose-invert max-w-3xl mx-auto lg:prose-lg">
+      <h1>{% translate "About UpCheck" %}</h1>
+
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck is a lightweight uptime monitor for websites and APIs. You add the addresses you
+          care about, choose how often they should be checked (every 1 to 60 minutes), and UpCheck
+          pings them on schedule, charts their response times, and can publish a public status page
+          for each monitor.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Who runs it" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck is an independent product built and operated by Mitja Martini —
+          no company, no sales team, just a working service. You can reach me anytime at
+          <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Open source, on purpose" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck doubles as a public, open-source demo of running a Django SaaS in production. It is
+          built on the open-source <a class="link" href="https://www.saaspegasus.com/" target="_blank" rel="noopener">SaaS Pegasus</a>
+          boilerplate, handles subscriptions through
+          <a class="link" href="https://polar.sh" target="_blank" rel="noopener">Polar.sh</a> via the
+          django-polar-sh package, and runs on
+          <a class="link" href="https://paasbox.com" target="_blank" rel="noopener">PAASBOX</a>,
+          managed Kubernetes on Hetzner. The complete source code — including the deployment
+          manifests for this very instance — is on
+          <a class="link" href="https://github.com/mitja/upcheck" target="_blank" rel="noopener">GitHub</a>.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Plans" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          The Free plan includes 2 monitors checked as often as every 5 minutes. Pro is €5/month for
+          5 monitors and 1-minute check intervals. Payments are processed by Polar.sh as merchant of
+          record, and you can cancel anytime.
+        {% endblocktranslate %}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

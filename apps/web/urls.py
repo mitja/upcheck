@@ -1,4 +1,5 @@
 from django.urls import path
+from django.utils.translation import gettext_lazy
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 
@@ -7,7 +8,32 @@ from . import views
 app_name = "web"
 urlpatterns = [
     path("", views.home, name="home"),
-    path("terms/", TemplateView.as_view(template_name="web/terms.html"), name="terms"),
+    path(
+        "about/",
+        TemplateView.as_view(template_name="web/about.html", extra_context={"page_title": gettext_lazy("About")}),
+        name="about",
+    ),
+    path(
+        "terms/",
+        TemplateView.as_view(
+            template_name="web/terms.html", extra_context={"page_title": gettext_lazy("Terms of Service")}
+        ),
+        name="terms",
+    ),
+    path(
+        "privacy/",
+        TemplateView.as_view(
+            template_name="web/privacy.html", extra_context={"page_title": gettext_lazy("Privacy Policy")}
+        ),
+        name="privacy",
+    ),
+    path(
+        "refunds/",
+        TemplateView.as_view(
+            template_name="web/refunds.html", extra_context={"page_title": gettext_lazy("Refund Policy")}
+        ),
+        name="refunds",
+    ),
     path("robots.txt", TemplateView.as_view(template_name="robots.txt", content_type="text/plain"), name="robots.txt"),
     # these views are just for testing error pages
     # actual error handling is handled by Django: https://docs.djangoproject.com/en/stable/ref/views/#error-views

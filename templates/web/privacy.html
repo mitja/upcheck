@@ -1,0 +1,104 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% block body %}
+<section class="section mt-7">
+  <div class="container">
+    <div class="prose dark:prose-invert max-w-3xl mx-auto lg:prose-lg">
+      <h1>{% translate "Privacy Policy" %}</h1>
+
+      <div class="not-prose alert alert-warning mb-6" role="note">
+        <span>
+          {% blocktranslate trimmed %}
+            <strong>DRAFT</strong> — this is placeholder legal text that has not been reviewed by a lawyer.
+            Questions? Email <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+          {% endblocktranslate %}
+        </span>
+      </div>
+
+      <h2>{% translate "Who is responsible" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck is operated by Mitja Martini. For any privacy request, contact
+          <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        <em>{% translate "TODO (owner): add postal address / full controller details if required." %}</em>
+      </p>
+
+      <h2>{% translate "What we store" %}</h2>
+      <ul>
+        <li>
+          {% blocktranslate trimmed %}
+            <strong>Account data</strong>: your email address and a hashed password (or your social
+            login identity, if you use one).
+          {% endblocktranslate %}
+        </li>
+        <li>
+          {% blocktranslate trimmed %}
+            <strong>Monitor configuration</strong>: the names, URLs, and check intervals you set up.
+          {% endblocktranslate %}
+        </li>
+        <li>
+          {% blocktranslate trimmed %}
+            <strong>Check results</strong>: status and response times of your monitors, kept for
+            7 days and then deleted automatically.
+          {% endblocktranslate %}
+        </li>
+        <li>
+          {% blocktranslate trimmed %}
+            <strong>Operational logs</strong>: short-lived technical logs used to run and debug the
+            service.
+          {% endblocktranslate %}
+        </li>
+      </ul>
+
+      <h2>{% translate "Payments" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          Subscription payments are processed by
+          <a class="link" href="https://polar.sh" target="_blank" rel="noopener">Polar.sh</a>, acting
+          as merchant of record. Polar collects and processes your billing and payment details under
+          its own <a class="link" href="https://polar.sh/legal/privacy-policy" target="_blank" rel="noopener">privacy policy</a>.
+          UpCheck never sees or stores your card details; we only receive your subscription status.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Cookies" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck uses only essential cookies: a session cookie to keep you signed in and a CSRF
+          cookie to protect forms. There is no advertising or cross-site tracking.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        <em>
+          {% blocktranslate trimmed %}
+            TODO (owner): if web analytics (e.g. Google Analytics) is enabled in production, disclose
+            it here.
+          {% endblocktranslate %}
+        </em>
+      </p>
+
+      <h2>{% translate "Where data lives" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          The service runs on <a class="link" href="https://paasbox.com" target="_blank" rel="noopener">PAASBOX</a>
+          (managed Kubernetes on Hetzner infrastructure in the European Union).
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Your rights" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          You can access, correct, or delete your data at any time — monitors and their data are
+          deleted with your account. For a data export, deletion request, or any other privacy
+          question, email <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+          If you are in the EU/EEA, you also have the rights granted by the GDPR, including the right
+          to lodge a complaint with a supervisory authority.
+        {% endblocktranslate %}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}

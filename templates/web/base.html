@@ -5,6 +5,18 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="utf-8">
+    <script>
+      // Follow the OS color scheme. DaisyUI themes and Tailwind dark: variants
+      // both key off the data-theme attribute (see assets/styles/site-tailwind.css).
+      (function () {
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function () {
+          document.documentElement.setAttribute("data-theme", mq.matches ? "dark" : "light");
+        };
+        apply();
+        mq.addEventListener("change", apply);
+      })();
+    </script>
     <!--IE compatibility-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!--Mobile friendly-->

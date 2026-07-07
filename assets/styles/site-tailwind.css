@@ -11,7 +11,43 @@
 
 
 @plugin "@tailwindcss/typography";
-@plugin "daisyui";
+
+/*
+  UpCheck theme — a sibling of the PAASBOX brand (teal-green family).
+  PAASBOX brand ramp for reference: #34d399 / #00a578 / #008060 / #006e52.
+  UpCheck leans slightly more teal, staying in the same color temperature.
+  Overriding the built-in "light"/"dark" DaisyUI themes keeps all base/neutral
+  colors at their readable defaults; only the brand colors change.
+*/
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  --color-primary: #0f766e; /* deep teal — AA contrast for white button labels */
+  --color-primary-content: #ffffff;
+  --color-secondary: #008060; /* PAASBOX brand-600 */
+  --color-secondary-content: #ffffff;
+  --color-accent: #00a578; /* PAASBOX brand-500 */
+  --color-accent-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  prefersdark: true;
+  --color-primary: #2dd4bf; /* bright teal for dark surfaces */
+  --color-primary-content: #042f2e;
+  --color-secondary: #34d399; /* PAASBOX brand-400 */
+  --color-secondary-content: #022c22;
+  --color-accent: #00a578;
+  --color-accent-content: #ffffff;
+}
+
+/* Make Tailwind's dark: variant follow the DaisyUI theme (data-theme on <html>),
+   so hand-written dark: utilities and DaisyUI semantic colors stay in sync. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,

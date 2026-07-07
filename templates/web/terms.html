@@ -1,11 +1,126 @@
 {% extends "web/base.html" %}
-{% load static %}
+{% load i18n %}
 {% block body %}
 <section class="section mt-7">
   <div class="container">
-    <div class="prose max-w-none lg:prose-lg">
-      <h1>Terms Of Service</h1>
-      <p>Your site's terms go here.</p>
+    <div class="prose dark:prose-invert max-w-3xl mx-auto lg:prose-lg">
+      <h1>{% translate "Terms of Service" %}</h1>
+
+      <div class="not-prose alert alert-warning mb-6" role="note">
+        <span>
+          {% blocktranslate trimmed %}
+            <strong>DRAFT</strong> — this is placeholder legal text that has not been reviewed by a lawyer.
+            Questions? Email <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+          {% endblocktranslate %}
+        </span>
+      </div>
+
+      <p>
+        {% blocktranslate trimmed %}
+          These terms govern your use of UpCheck (upcheck.paasbox.com), an uptime-monitoring service
+          operated by Mitja Martini ("we", "us"). By creating an account you agree to these terms.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "1. The service" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck periodically sends HTTP(S) requests to web addresses you configure ("monitors"),
+          records whether they respond and how fast, shows you response-time charts, and can publish
+          a public status page per monitor. Check intervals range from 1 to 60 minutes depending on
+          your plan.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "2. Your account" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          You are responsible for the activity under your account and for keeping your credentials
+          secure. You must provide a valid email address.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "3. Plans, pricing and billing" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          The Free plan includes up to 2 monitors with a minimum check interval of 5 minutes. The Pro
+          plan costs €5 per month and includes up to 5 monitors with check intervals as short as
+          1 minute. Current pricing is always shown on the pricing section of the homepage and on the
+          in-app upgrade page.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        {% blocktranslate trimmed %}
+          Payments are processed by <a class="link" href="https://polar.sh" target="_blank" rel="noopener">Polar.sh</a>,
+          acting as merchant of record and authorized reseller. Your purchase is additionally subject to the
+          <a class="link" href="https://polar.sh/legal/checkout-buyer-terms" target="_blank" rel="noopener">Polar buyer terms</a>.
+          You can cancel your subscription at any time in the Polar customer portal (reachable from the
+          in-app billing page); cancellation takes effect at the end of the current billing period.
+          See our <a class="link" href="/refunds/">refund policy</a> for refunds.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "4. Acceptable use" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          Only monitor endpoints you own or are authorized to check. Targets that resolve to private
+          or internal network addresses are refused by the service. Each plan enforces caps on the
+          number of monitors and the minimum check interval; you must not attempt to circumvent them.
+          We may suspend accounts that abuse the service or use it to burden third-party
+          infrastructure.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "5. Data and retention" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          Check results are retained for 7 days and then deleted automatically. Monitor
+          configurations remain until you delete them or your account. See the
+          <a class="link" href="/privacy/">privacy policy</a> for details on personal data.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "6. Availability and warranty" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck is provided "as is", without warranties of any kind and without an uptime guarantee
+          or SLA for the monitoring service itself. It is an independent indie product; do not rely on
+          it as your only safeguard for critical infrastructure. To the extent permitted by law, our
+          liability is limited to the amount you paid us in the 12 months before the claim arose.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "7. Termination" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          You can delete your account at any time. We may terminate or suspend accounts that violate
+          these terms. Upon termination, your monitors and their data are deleted.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "8. Changes to these terms" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          We may update these terms; material changes will be announced on this page with a new
+          effective date. Continued use after a change constitutes acceptance.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "9. Governing law" %}</h2>
+      <p>
+        <em>{% translate "TODO (owner): specify governing law and jurisdiction." %}</em>
+      </p>
+
+      <h2>{% translate "10. Contact and provider identification" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck is operated by Mitja Martini. Contact:
+          <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        <em>{% translate "TODO (owner): add postal address / imprint details here if required." %}</em>
+      </p>
     </div>
   </div>
 </section>

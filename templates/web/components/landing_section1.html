@@ -1,54 +1,105 @@
-{% load static %}
+{% load i18n %}
 <section>
-  <div class="overflow-hidden py-12" id="section1">
-    <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) sm:py-16 lg:px-6 text-black">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8">
+  <div class="overflow-hidden py-12" id="open-source">
+    <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) sm:py-16 lg:px-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 items-center">
         <div class="space-y-8">
           <div class="max-w-(--breakpoint-md) mb-8 lg:mb-8">
-            <h2 class="text-base font-semibold leading-7 text-primary">Headline 1 in detail</h2>
-            <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl">It really is amazing</p>
-            <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet purus in odio ultricies
+            <h2 class="text-base font-semibold leading-7 text-primary">{% translate "Open source" %}</h2>
+            <p class="mt-2 text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
+              {% translate "A real SaaS you can read the source of" %}
+            </p>
+            <p class="mt-6 text-lg leading-8 text-base-content/70">
+              {% blocktranslate trimmed %}
+                UpCheck is a working uptime monitor and, at the same time, an open-source demo of
+                running a Django SaaS in production. Everything you see here — code, billing
+                integration, and deployment — is public.
+              {% endblocktranslate %}
             </p>
           </div>
           <div class="grid grid-cols-6">
             <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-              <svg class="h-5 w-5 flex-none text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M1.045 6.954a2.75 2.75 0 01.217-.678L2.53 3.58A2.75 2.75 0 015.019 2h9.962a2.75 2.75 0 012.488 1.58l1.27 2.696c.101.216.174.444.216.678A1 1 0 0119 7.25v1.5a2.75 2.75 0 01-2.75 2.75H3.75A2.75 2.75 0 011 8.75v-1.5a1 1 0 01.045-.296zm2.843-2.736A1.25 1.25 0 015.02 3.5h9.962c.484 0 .925.28 1.13.718l.957 2.032H14a1 1 0 00-.86.49l-.606 1.02a1 1 0 01-.86.49H8.236a1 1 0 01-.894-.553l-.448-.894A1 1 0 006 6.25H2.932l.956-2.032z" clip-rule="evenodd" />
-                  <path d="M1 14a1 1 0 011-1h4a1 1 0 01.894.553l.448.894a1 1 0 00.894.553h3.438a1 1 0 00.86-.49l.606-1.02A1 1 0 0114 13h4a1 1 0 011 1v2a2 2 0 01-2 2H3a2 2 0 01-2-2v-2z" />
+              {# building-blocks icon #}
+              <svg class="h-5 w-5 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="4" y="4" width="7" height="7" rx="1"></rect>
+                <rect x="13" y="4" width="7" height="7" rx="1"></rect>
+                <rect x="4" y="13" width="7" height="7" rx="1"></rect>
+                <rect x="13" y="13" width="7" height="7" rx="1"></rect>
               </svg>
             </div>
             <div class="col-span-5">
-              <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Something good</h3>
-              <p class="text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet purus in odio ultricies</p>
+              <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Built on SaaS Pegasus" %}</h3>
+              <p class="text-base-content/70">
+                {% blocktranslate trimmed %}
+                  Django, Celery, Tailwind CSS, and DaisyUI on the open-source
+                  <a class="link" href="https://www.saaspegasus.com/" target="_blank" rel="noopener">SaaS Pegasus</a>
+                  boilerplate — a solid, boring foundation.
+                {% endblocktranslate %}
+              </p>
             </div>
           </div>
           <div class="grid grid-cols-6">
             <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-              <svg class="h-5 w-5 flex-none text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z" clip-rule="evenodd" />
+              {# credit-card icon #}
+              <svg class="h-5 w-5 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <path d="M3 10h18"></path>
+                <path d="M7 15h4"></path>
               </svg>
             </div>
             <div class="col-span-5">
-              <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Something better</h3>
-              <p class="text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet purus in odio ultricies</p>
+              <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Billing with django-polar-sh" %}</h3>
+              <p class="text-base-content/70">
+                {% blocktranslate trimmed %}
+                  Subscriptions are handled by <a class="link" href="https://polar.sh" target="_blank" rel="noopener">Polar.sh</a>
+                  as merchant of record, integrated through the open-source django-polar-sh package.
+                {% endblocktranslate %}
+              </p>
             </div>
           </div>
           <div class="grid grid-cols-6">
             <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-              <svg class="h-5 w-5 flex-none text-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="M9.25 13.25a.75.75 0 001.5 0V4.636l2.955 3.129a.75.75 0 001.09-1.03l-4.25-4.5a.75.75 0 00-1.09 0l-4.25 4.5a.75.75 0 101.09 1.03L9.25 4.636v8.614z" />
-                <path d="M3.5 12.75a.75.75 0 00-1.5 0v2.5A2.75 2.75 0 004.75 18h10.5A2.75 2.75 0 0018 15.25v-2.5a.75.75 0 00-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5z" />
+              {# ship's wheel-ish icon #}
+              <svg class="h-5 w-5 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                   fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v6"></path>
+                <path d="M12 16v6"></path>
+                <path d="M2 12h6"></path>
+                <path d="M16 12h6"></path>
               </svg>
             </div>
             <div class="col-span-5">
-              <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Best yet!</h3>
-              <p class="text-gray-500 dark:text-gray-400">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet purus in odio ultricies</p>
+              <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Runs on Kubernetes" %}</h3>
+              <p class="text-base-content/70">
+                {% blocktranslate trimmed %}
+                  This live instance runs on <a class="link" href="https://paasbox.com" target="_blank" rel="noopener">PAASBOX</a>,
+                  managed Kubernetes on Hetzner — the deployment manifests are part of the repository.
+                {% endblocktranslate %}
+              </p>
             </div>
+          </div>
+          <div>
+            <a href="https://github.com/mitja/upcheck" target="_blank" rel="noopener" class="btn btn-outline">
+              {# GitHub mark #}
+              <svg class="h-5 w-5" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              {% translate "View the code on GitHub" %}
+            </a>
           </div>
         </div>
         <div class="mt-8 lg:mt-0">
-          <img src="{% static 'images/undraw/undraw_outer_space.svg' %}" alt="Incredible" class="w-[48rem] max-w-none sm:w-[57rem] md:-ml-4 lg:-ml-0" width="2432" height="1442">
+          {# Self-contained code mockup instead of a stock illustration. #}
+          <div class="mockup-code w-full text-sm" aria-hidden="true">
+            <pre data-prefix="$"><code>git clone https://github.com/mitja/upcheck</code></pre>
+            <pre data-prefix="$"><code>cd upcheck &amp;&amp; uv sync</code></pre>
+            <pre data-prefix="$"><code>uv run manage.py migrate</code></pre>
+            <pre data-prefix="$"><code>uv run manage.py runserver</code></pre>
+            <pre data-prefix=">" class="text-success"><code>Starting development server at http://127.0.0.1:8000/</code></pre>
+          </div>
         </div>
       </div>
     </div>

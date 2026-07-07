@@ -1,73 +1,141 @@
+{% load i18n %}
 <section>
-  <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) sm:py-16 lg:px-6 text-black">
+  <div class="py-8 px-4 mx-auto max-w-(--breakpoint-xl) sm:py-16 lg:px-6">
     <div class="mx-auto text-center max-w-(--breakpoint-md) mb-8 lg:mb-16">
-      <h2 class="text-base font-semibold leading-7 text-primary">Powerful Built-In Features</h2>
-      <h2 class="mt-2 mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-gray-100">
-        Headlines that catch your attention
-      </h2>
+      <h2 class="text-base font-semibold leading-7 text-primary">{% translate "Uptime monitoring, minus the bloat" %}</h2>
+      <p class="mt-2 mb-4 text-4xl tracking-tight font-extrabold text-base-content">
+        {% translate "Everything you need to watch your sites" %}
+      </p>
     </div>
     <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
-      <div class="grid grid-cols-6 lg:grid-cols-1">
-        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg"
-               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-               stroke-linejoin="round">
-            <path
-              d="M7 7h10a2 2 0 0 1 2 2v1l1 1v3l-1 1v3a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-3l-1 -1v-3l1 -1v-1a2 2 0 0 1 2 -2z"></path>
-            <path d="M10 16h4"></path>
-            <circle cx="8.5" cy="11.5" r=".5" fill="currentColor"></circle>
-            <circle cx="15.5" cy="11.5" r=".5" fill="currentColor"></circle>
-            <path d="M9 7l-1 -4"></path>
-            <path d="M15 7l1 -4"></path>
-          </svg>
-        </div>
-        <div class="col-span-5 lg:col-span-0">
-          <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Headline 1</h3>
-          <p class="text-gray-500 dark:text-gray-400">Short explanation of headline 1</p>
-          <p class="mt-6">
-            <a href="#section1" class="text-sm font-semibold leading-6 text-primary">
-              Learn more<span aria-hidden="true">→</span>
-            </a>
-          </p>
-        </div>
-      </div>
-      <div class="grid grid-cols-6 lg:grid-cols-1">
-        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" viewBox="0 0 20 20" fill="currentColor"
-               aria-hidden="true">
-            <path fill-rule="evenodd"
-                  d="M1.045 6.954a2.75 2.75 0 01.217-.678L2.53 3.58A2.75 2.75 0 015.019 2h9.962a2.75 2.75 0 012.488 1.58l1.27 2.696c.101.216.174.444.216.678A1 1 0 0119 7.25v1.5a2.75 2.75 0 01-2.75 2.75H3.75A2.75 2.75 0 011 8.75v-1.5a1 1 0 01.045-.296zm2.843-2.736A1.25 1.25 0 015.02 3.5h9.962c.484 0 .925.28 1.13.718l.957 2.032H14a1 1 0 00-.86.49l-.606 1.02a1 1 0 01-.86.49H8.236a1 1 0 01-.894-.553l-.448-.894A1 1 0 006 6.25H2.932l.956-2.032z"
-                  clip-rule="evenodd"/>
-            <path
-              d="M1 14a1 1 0 011-1h4a1 1 0 01.894.553l.448.894a1 1 0 00.894.553h3.438a1 1 0 00.86-.49l.606-1.02A1 1 0 0114 13h4a1 1 0 011 1v2a2 2 0 01-2 2H3a2 2 0 01-2-2v-2z"/>
-          </svg>
-        </div>
-        <div class="col-span-5 lg:col-span-0">
-          <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Headline 2</h3>
-          <p class="text-gray-500 dark:text-gray-400">Short explanation of headline 2</p>
-          <p class="mt-6">
-            <a href="#section2" class="text-sm font-semibold leading-6 text-primary">Learn more
-              <span aria-hidden="true">→</span>
-            </a>
-          </p>
-        </div>
 
-      </div>
       <div class="grid grid-cols-6 lg:grid-cols-1">
-        <div class="flex justify-center items-center w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
-          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" viewBox="0 0 20 20" fill="currentColor"
-               aria-hidden="true">
-            <path
-              d="M3.505 2.365A41.369 41.369 0 019 2c1.863 0 3.697.124 5.495.365 1.247.167 2.18 1.108 2.435 2.268a4.45 4.45 0 00-.577-.069 43.141 43.141 0 00-4.706 0C9.229 4.696 7.5 6.727 7.5 8.998v2.24c0 1.413.67 2.735 1.76 3.562l-2.98 2.98A.75.75 0 015 17.25v-3.443c-.501-.048-1-.106-1.495-.172C2.033 13.438 1 12.162 1 10.72V5.28c0-1.441 1.033-2.717 2.505-2.914z"/>
-            <path
-              d="M14 6c-.762 0-1.52.02-2.271.062C10.157 6.148 9 7.472 9 8.998v2.24c0 1.519 1.147 2.839 2.71 2.935.214.013.428.024.642.034.2.009.385.09.518.224l2.35 2.35a.75.75 0 001.28-.531v-2.07c1.453-.195 2.5-1.463 2.5-2.915V8.998c0-1.526-1.157-2.85-2.729-2.936A41.645 41.645 0 0014 6z"/>
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# clock icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 7v5l3 3"></path>
           </svg>
         </div>
-        <div class="col-span-5 lg:col-span-0">
-          <h3 class="mb-2 text-xl font-bold text-gray-900 dark:text-gray-100">Headline 3</h3>
-          <p class="text-gray-500 dark:text-gray-400">Short explanation of headline 3</p>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Checks on your schedule" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              HTTP and HTTPS checks run automatically every 1 to 60 minutes — you pick the interval per monitor.
+            {% endblocktranslate %}
+          </p>
         </div>
       </div>
+
+      <div class="grid grid-cols-6 lg:grid-cols-1">
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# chart icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 19V5"></path>
+            <path d="M4 19h16"></path>
+            <path d="M7 14l4-5 3 3 5-7"></path>
+          </svg>
+        </div>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Response-time charts" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              Spot slowdowns before they become outages, with per-monitor charts of the last 7 days of checks.
+            {% endblocktranslate %}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-6 lg:grid-cols-1">
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# globe icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M3 12h18"></path>
+            <path d="M12 3a13.5 13.5 0 0 1 0 18a13.5 13.5 0 0 1 0-18"></path>
+          </svg>
+        </div>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Public status pages" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              Every monitor can have its own shareable status page — no login required for your visitors.
+            {% endblocktranslate %}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-6 lg:grid-cols-1">
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# check-circle icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M8.5 12.5l2.5 2.5 4.5-5"></path>
+          </svg>
+        </div>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Up or down at a glance" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              One dashboard shows the current status and recent results of all your monitors.
+            {% endblocktranslate %}
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-6 lg:grid-cols-1">
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# tag icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 4h7l9 9-7 7-9-9z"></path>
+            <circle cx="8.5" cy="8.5" r="1" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Simple, honest pricing" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              Start free with 2 monitors. Pro is €5/month for 5 monitors and 1-minute checks.
+            {% endblocktranslate %}
+          </p>
+          <p class="mt-6">
+            <a href="#pricing" class="text-sm font-semibold leading-6 text-primary">
+              {% translate "See pricing" %} <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-6 lg:grid-cols-1">
+        <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary/20 lg:h-12 lg:w-12">
+          {# code icon #}
+          <svg class="h-5 w-5 lg:w-6 lg:h-6 flex-none text-primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 8l-4 4 4 4"></path>
+            <path d="M16 8l4 4-4 4"></path>
+            <path d="M13 5l-2 14"></path>
+          </svg>
+        </div>
+        <div class="col-span-5 lg:col-span-1">
+          <h3 class="mb-2 text-xl font-bold text-base-content">{% translate "Open source" %}</h3>
+          <p class="text-base-content/70">
+            {% blocktranslate trimmed %}
+              The full source is on GitHub — UpCheck doubles as a reference for running a Django SaaS on Kubernetes.
+            {% endblocktranslate %}
+          </p>
+          <p class="mt-6">
+            <a href="#open-source" class="text-sm font-semibold leading-6 text-primary">
+              {% translate "Read the story" %} <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

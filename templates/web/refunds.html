@@ -1,0 +1,78 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% block body %}
+<section class="section mt-7">
+  <div class="container">
+    <div class="prose dark:prose-invert max-w-3xl mx-auto lg:prose-lg">
+      <h1>{% translate "Refund Policy" %}</h1>
+
+      <div class="not-prose alert alert-warning mb-6" role="note">
+        <span>
+          {% blocktranslate trimmed %}
+            <strong>DRAFT</strong> — this is placeholder legal text that has not been reviewed by a lawyer.
+            Questions? Email <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>.
+          {% endblocktranslate %}
+        </span>
+      </div>
+
+      <h2>{% translate "How billing works" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          UpCheck Pro (€5/month) is billed as a monthly subscription. Payments are processed by
+          <a class="link" href="https://polar.sh" target="_blank" rel="noopener">Polar.sh</a>, acting
+          as merchant of record and authorized reseller — the charge on your statement comes from
+          Polar. Purchases are also subject to the
+          <a class="link" href="https://polar.sh/legal/checkout-buyer-terms" target="_blank" rel="noopener">Polar buyer terms</a>.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Cancellation" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          You can cancel at any time through the Polar customer portal, reachable from the in-app
+          billing page. Cancellation takes effect at the end of the current billing period: you keep
+          Pro features until then, and you are not charged again.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "Refunds" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          If you are not happy with UpCheck Pro, email
+          <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a> within
+          <strong>30 days</strong> of your first Pro payment and we will refund that payment in full —
+          no questions asked.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        {% blocktranslate trimmed %}
+          For subsequent renewal payments, fees for billing periods that have already elapsed are
+          generally non-refundable (consistent with the Polar buyer terms), except where the service
+          was not provided or where the law requires otherwise. If a renewal charged you by surprise,
+          reach out anyway — we aim to be reasonable.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        {% blocktranslate trimmed %}
+          Independent of this policy, Polar (as merchant of record) may issue refunds at its own
+          discretion within 60 days of a purchase, for example to prevent chargebacks.
+        {% endblocktranslate %}
+      </p>
+      <p>
+        {% blocktranslate trimmed %}
+          Nothing in this policy limits any statutory rights you may have as a consumer.
+        {% endblocktranslate %}
+      </p>
+
+      <h2>{% translate "How to request a refund" %}</h2>
+      <p>
+        {% blocktranslate trimmed %}
+          Email <a class="link" href="mailto:mitja.martini@gmail.com">mitja.martini@gmail.com</a>
+          from your account email address, and include the approximate purchase date. Refunds are
+          issued to the original payment method via Polar.
+        {% endblocktranslate %}
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
