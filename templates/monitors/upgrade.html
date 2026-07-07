@@ -1,0 +1,32 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% load polar %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-3xl font-bold mb-4">{% translate "Plan & Billing" %}</h1>
+  <p class="mb-6">
+    {% blocktranslate with plan_name=plan.name %}You are on the <strong>{{ plan_name }}</strong> plan.{% endblocktranslate %}
+    {% blocktranslate with limit=plan.max_monitors interval=plan.min_interval_minutes %}
+      Up to {{ limit }} monitors, checked as often as every {{ interval }} minute(s).
+    {% endblocktranslate %}
+  </p>
+
+  {% if plan.slug == "free" %}
+    <div class="mb-6">
+      {% polar_pricing_table %}
+    </div>
+    <p class="text-sm text-base-content/60">
+      {% blocktranslate with limit=pro.max_monitors %}
+        Pro: up to {{ limit }} monitors and 1-minute check intervals.
+      {% endblocktranslate %}
+    </p>
+  {% else %}
+    <a href="{% url 'polar_django:portal' %}" class="btn btn-primary">
+      <i class="fa fa-credit-card h-4 w-4"></i> {% translate "Manage subscription" %}
+    </a>
+    <p class="text-sm text-base-content/60 mt-2">
+      {% translate "Invoices, payment method, and cancellation are handled in the Polar customer portal." %}
+    </p>
+  {% endif %}
+</section>
+{% endblock %}

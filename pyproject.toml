@@ -55,6 +55,9 @@ django_settings_module = "project.settings"
 [tool.setuptools]
 py-modules = []
 
+[tool.uv.sources]
+django-polar-sh = { git = "https://github.com/mitja/django-polar-sh", rev = "6613d73218d93d0a1bc5559bf01c292f2a25e5aa" }
+
 [project]
 name = "project"
 version = "0.1.0"
@@ -71,12 +74,14 @@ dependencies = [
     "django-celery-beat",
     "django-environ",
     "django-htmx",
+    "django-polar-sh",
     "django-vite>=3.1.0",
     "django-waffle",
     "djangorestframework",
     "drf-spectacular",
     "psycopg",
     "redis",
+    "requests>=2.34.2",
 ]
 
 [dependency-groups]

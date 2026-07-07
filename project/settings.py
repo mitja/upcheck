@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 import environ
+from celery import schedules
 from django.utils.translation import gettext_lazy
 
 # Build paths inside the project like this: BASE_DIR / "subdir".
@@ -61,12 +62,14 @@ THIRD_PARTY_APPS = [
     "celery_progress",
     "waffle",
     "django_celery_beat",
+    "polar_django",
 ]
 
 # Put your project-specific apps here
 PROJECT_APPS = [
     "apps.users.apps.UserConfig",
     "apps.web",
+    "apps.monitors",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
@@ -342,12 +345,30 @@ CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 # Add tasks to this dict and run `python manage.py bootstrap_celery_tasks` to create them
 SCHEDULED_TASKS: dict[str, Any] = {
-    # Example of a crontab schedule
-    # from celery import schedules
-    # "daily-4am-task": {
-    #     "task": "some.task.path",
-    #     "schedule": schedules.crontab(minute=0, hour=4),
-    # },
+    "monitors-dispatch-checks": {
+        "task": "apps.monitors.tasks.dispatch_checks",
+        "schedule": schedules.crontab(),  # every minute
+    },
+    "monitors-prune-results": {
+        "task": "apps.monitors.tasks.prune_results",
+        "schedule": schedules.crontab(minute=15, hour=3),
+    },
+}
+
+# Polar.sh billing (django-polar-sh). Unset credentials leave billing in
+# "unconfigured" mode: the app runs fine, checkout/portal are disabled.
+POLAR = {
+    "ACCESS_TOKEN": env("POLAR_ACCESS_TOKEN", default=""),
+    "SERVER": env("POLAR_SERVER", default="sandbox"),
+    "WEBHOOK_SECRET": env("POLAR_WEBHOOK_SECRET", default=""),
+    "PLANS": {
+        "pro": {
+            "name": "Pro",
+            "price_eur": 5,
+            "polar_product_id": env("POLAR_PRODUCT_ID_PRO", default=""),
+            "checkout_url": env("POLAR_CHECKOUT_URL_PRO", default=""),
+        },
+    },
 }
 
 
@@ -357,7 +378,9 @@ SCHEDULED_TASKS: dict[str, Any] = {
 PROJECT_METADATA = {
     "NAME": gettext_lazy("UpCheck"),
     "URL": "http://localhost:8001",
-    "DESCRIPTION": gettext_lazy("Lightweight uptime monitoring for your sites and APIs — know the moment things go down."),  # noqa: E501
+    "DESCRIPTION": gettext_lazy(
+        "Lightweight uptime monitoring for your sites and APIs — know the moment things go down."
+    ),  # noqa: E501
     "IMAGE": "https://upload.wikimedia.org/wikipedia/commons/2/20/PEO-pegasus_black.svg",
     "KEYWORDS": "uptime, monitoring, SaaS, django",
     "CONTACT_EMAIL": "mitja.martini@gmail.com",

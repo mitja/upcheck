@@ -1,0 +1,39 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% load django_vite %}
+{% block app %}
+<section class="app-card">
+  <div class="flex items-center justify-between mb-1">
+    <h1 class="text-3xl font-bold">{{ monitor.name }}</h1>
+    <div class="flex gap-2">
+      {% if monitor.is_public %}
+        <a href="{% url 'monitors:public_status' monitor.slug %}" class="btn btn-ghost btn-sm">
+          <i class="fa fa-globe"></i> {% translate "Public page" %}
+        </a>
+      {% endif %}
+      <a href="{% url 'monitors:edit' monitor.pk %}" class="btn btn-ghost btn-sm">{% translate "Edit" %}</a>
+      <a href="{% url 'monitors:delete' monitor.pk %}" class="btn btn-ghost btn-sm text-error">{% translate "Delete" %}</a>
+    </div>
+  </div>
+  <p class="text-sm text-base-content/60 mb-6 break-all">
+    <a class="link" href="{{ monitor.url }}" target="_blank" rel="noopener noreferrer">{{ monitor.url }}</a>
+  </p>
+
+  <div hx-get="{% url 'monitors:results_partial' monitor.pk %}" hx-trigger="every 60s" hx-swap="innerHTML">
+    {% include "monitors/components/results_panel.html" %}
+  </div>
+</section>
+
+<section class="app-card">
+  <h2 class="text-xl font-bold mb-2">{% translate "Response time (24h)" %}</h2>
+  <div class="h-72"><canvas id="response-chart"></canvas></div>
+</section>
+{% endblock %}
+{% block page_js %}
+{% vite_asset 'assets/javascript/monitors.js' %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    SiteJS.monitors.renderMonitorChart('response-chart', '{% url "monitors:data" monitor.pk %}');
+  });
+</script>
+{% endblock %}

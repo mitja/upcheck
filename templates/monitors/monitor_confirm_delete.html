@@ -1,0 +1,15 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-3xl font-bold mb-4">{% translate "Delete monitor" %}</h1>
+  <p class="mb-4">
+    {% blocktranslate with name=monitor.name %}Delete "{{ name }}" and all of its check history? This cannot be undone.{% endblocktranslate %}
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-error">{% translate "Delete" %}</button>
+    <a href="{% url 'monitors:detail' monitor.pk %}" class="btn btn-ghost">{% translate "Cancel" %}</a>
+  </form>
+</section>
+{% endblock %}

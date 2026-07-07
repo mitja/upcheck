@@ -1,0 +1,51 @@
+{% extends "web/base.html" %}
+{% load i18n %}
+{% load django_vite %}
+{% block body %}
+<section class="section">
+  <div class="container max-w-3xl mx-auto py-12 px-4">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <div class="flex items-center justify-between">
+          <h1 class="card-title text-3xl">{{ monitor.name }}</h1>
+          {% if monitor.last_status == "up" %}
+            <span class="badge badge-success badge-lg">{% translate "Operational" %}</span>
+          {% elif monitor.last_status == "down" %}
+            <span class="badge badge-error badge-lg">{% translate "Down" %}</span>
+          {% else %}
+            <span class="badge badge-ghost badge-lg">{% translate "Pending" %}</span>
+          {% endif %}
+        </div>
+        <div class="stats stats-vertical sm:stats-horizontal mt-4">
+          <div class="stat">
+            <div class="stat-title">{% translate "Uptime (24h)" %}</div>
+            <div class="stat-value">{% if uptime is not None %}{{ uptime|floatformat:1 }}%{% else %}—{% endif %}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">{% translate "Last response" %}</div>
+            <div class="stat-value">{% if monitor.last_response_ms is not None %}{{ monitor.last_response_ms }} ms{% else %}—{% endif %}</div>
+          </div>
+          <div class="stat">
+            <div class="stat-title">{% translate "Last checked" %}</div>
+            <div class="stat-value text-lg">
+              {% if monitor.last_checked_at %}{{ monitor.last_checked_at|timesince }} {% translate "ago" %}{% else %}—{% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="h-64 mt-6"><canvas id="response-chart"></canvas></div>
+      </div>
+    </div>
+    <p class="text-center text-sm text-base-content/50 mt-6">
+      {% translate "Powered by" %} <a class="link" href="https://github.com/mitja/upcheck">UpCheck</a>
+    </p>
+  </div>
+</section>
+{% endblock %}
+{% block page_js %}
+{% vite_asset 'assets/javascript/monitors.js' %}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    SiteJS.monitors.renderMonitorChart('response-chart', '{% url "monitors:public_status_data" monitor.slug %}');
+  });
+</script>
+{% endblock %}

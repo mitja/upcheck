@@ -1,0 +1,68 @@
+{% load i18n %}
+<div class="stats stats-vertical lg:stats-horizontal shadow mb-6 w-full">
+  <div class="stat">
+    <div class="stat-title">{% translate "Status" %}</div>
+    <div class="stat-value">
+      {% if not monitor.is_active %}
+        <span class="badge badge-ghost badge-lg">{% translate "paused" %}</span>
+      {% elif monitor.last_status == "up" %}
+        <span class="badge badge-success badge-lg">{% translate "up" %}</span>
+      {% elif monitor.last_status == "down" %}
+        <span class="badge badge-error badge-lg">{% translate "down" %}</span>
+      {% else %}
+        <span class="badge badge-ghost badge-lg">{% translate "pending" %}</span>
+      {% endif %}
+    </div>
+    <div class="stat-desc">
+      {% if monitor.last_checked_at %}
+        {% translate "checked" %} {{ monitor.last_checked_at|timesince }} {% translate "ago" %}
+      {% else %}
+        {% translate "first check pending" %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="stat">
+    <div class="stat-title">{% translate "Uptime (24h)" %}</div>
+    <div class="stat-value">{% if uptime is not None %}{{ uptime|floatformat:1 }}%{% else %}—{% endif %}</div>
+    <div class="stat-desc">{% translate "of checks succeeded" %}</div>
+  </div>
+  <div class="stat">
+    <div class="stat-title">{% translate "Last response" %}</div>
+    <div class="stat-value">{% if monitor.last_response_ms is not None %}{{ monitor.last_response_ms }} ms{% else %}—{% endif %}</div>
+    <div class="stat-desc">{{ monitor.get_interval_minutes_display }}</div>
+  </div>
+</div>
+
+<h2 class="text-xl font-bold mb-2">{% translate "Latest checks" %}</h2>
+<div class="overflow-x-auto">
+  <table class="table table-sm">
+    <thead>
+      <tr>
+        <th>{% translate "Time" %}</th>
+        <th>{% translate "Result" %}</th>
+        <th>{% translate "HTTP" %}</th>
+        <th>{% translate "Response" %}</th>
+        <th>{% translate "Error" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for result in results %}
+        <tr>
+          <td>{{ result.checked_at|date:"M j, H:i:s" }}</td>
+          <td>
+            {% if result.ok %}
+              <span class="badge badge-success badge-sm">ok</span>
+            {% else %}
+              <span class="badge badge-error badge-sm">fail</span>
+            {% endif %}
+          </td>
+          <td>{{ result.status_code|default:"—" }}</td>
+          <td>{% if result.response_ms is not None %}{{ result.response_ms }} ms{% else %}—{% endif %}</td>
+          <td class="text-xs text-base-content/60">{{ result.error }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-center text-base-content/60">{% translate "No checks yet — the first one runs within a minute." %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -3,9 +3,15 @@
   <span>{% translate "Application" %}</span>
 </li>
 <li>
-  <a href="{% url 'web:home' %}" {% if active_tab == 'dashboard' %}class="menu-active"{% endif %}>
-    <i class="fa fa-home h-4 w-4"></i>
-    {% translate "Dashboard" %}
+  <a href="{% url 'monitors:list' %}" {% if active_tab == 'dashboard' %}class="menu-active"{% endif %}>
+    <i class="fa fa-heartbeat h-4 w-4"></i>
+    {% translate "Monitors" %}
+  </a>
+</li>
+<li>
+  <a href="{% url 'monitors:upgrade' %}" {% if active_tab == 'upgrade' %}class="menu-active"{% endif %}>
+    <i class="fa fa-credit-card h-4 w-4"></i>
+    {% translate "Plan & Billing" %}
   </a>
 </li>
 {% if not user.is_anonymous %}

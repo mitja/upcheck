@@ -24,6 +24,7 @@ export default defineConfig({
         'site-tailwind-css': path.resolve(__dirname, './assets/styles/site-tailwind.css'),
         'site': path.resolve(__dirname, './assets/javascript/site.js'),
         'app': path.resolve(__dirname, './assets/javascript/app.js'),
+        'monitors': path.resolve(__dirname, './assets/javascript/monitors.js'),
       },
       output: {
         // Output JS bundles to js/ directory with -bundle suffix

@@ -1,0 +1,22 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% load form_tags %}
+{% block app %}
+<section class="app-card">
+  <h1 class="text-3xl font-bold mb-4">{{ page_title }}</h1>
+  <form method="post" class="max-w-xl">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-error mb-4">
+        {{ form.non_field_errors }}
+        <a href="{% url 'monitors:upgrade' %}" class="link">{% translate "See plans" %}</a>
+      </div>
+    {% endif %}
+    {% render_form_fields form %}
+    <div class="mt-4 flex gap-2">
+      <button type="submit" class="btn btn-primary">{% translate "Save" %}</button>
+      <a href="{% if monitor %}{% url 'monitors:detail' monitor.pk %}{% else %}{% url 'monitors:list' %}{% endif %}" class="btn btn-ghost">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "web/app/app_base.html" %}
+{% load i18n %}
+{% block app %}
+<section class="app-card">
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-3xl font-bold">{% translate "Monitors" %}</h1>
+    {% if can_add %}
+      <a href="{% url 'monitors:create' %}" class="btn btn-primary">
+        <i class="fa fa-plus h-4 w-4"></i> {% translate "New monitor" %}
+      </a>
+    {% else %}
+      <a href="{% url 'monitors:upgrade' %}" class="btn btn-outline btn-primary">
+        <i class="fa fa-arrow-up h-4 w-4"></i> {% translate "Upgrade for more monitors" %}
+      </a>
+    {% endif %}
+  </div>
+  <p class="text-sm text-base-content/70 mb-4">
+    {% blocktranslate with plan_name=plan.name used=monitors.count limit=plan.max_monitors %}
+      {{ plan_name }} plan — {{ used }} of {{ limit }} monitors used.
+    {% endblocktranslate %}
+  </p>
+  {% if monitors %}
+    <div class="overflow-x-auto">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>{% translate "Status" %}</th>
+            <th>{% translate "Name" %}</th>
+            <th>{% translate "Interval" %}</th>
+            <th>{% translate "Response" %}</th>
+            <th>{% translate "Last checked" %}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for monitor in monitors %}
+            <tr>
+              <td>
+                {% if not monitor.is_active %}
+                  <span class="badge badge-ghost">{% translate "paused" %}</span>
+                {% elif monitor.last_status == "up" %}
+                  <span class="badge badge-success">{% translate "up" %}</span>
+                {% elif monitor.last_status == "down" %}
+                  <span class="badge badge-error">{% translate "down" %}</span>
+                {% else %}
+                  <span class="badge badge-ghost">{% translate "pending" %}</span>
+                {% endif %}
+              </td>
+              <td>
+                <a class="link font-semibold" href="{% url 'monitors:detail' monitor.pk %}">{{ monitor.name }}</a>
+                <div class="text-xs text-base-content/60 max-w-60 truncate">{{ monitor.url }}</div>
+              </td>
+              <td>{{ monitor.get_interval_minutes_display }}</td>
+              <td>{% if monitor.last_response_ms is not None %}{{ monitor.last_response_ms }} ms{% else %}—{% endif %}</td>
+              <td>{% if monitor.last_checked_at %}{{ monitor.last_checked_at|timesince }} {% translate "ago" %}{% else %}—{% endif %}</td>
+              <td class="text-right">
+                {% if monitor.is_public %}
+                  <a class="btn btn-ghost btn-xs" href="{% url 'monitors:public_status' monitor.slug %}" title="{% translate 'Public status page' %}">
+                    <i class="fa fa-globe"></i>
+                  </a>
+                {% endif %}
+                <a class="btn btn-ghost btn-xs" href="{% url 'monitors:edit' monitor.pk %}">{% translate "Edit" %}</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="text-center py-12">
+      <i class="fa fa-heartbeat text-4xl text-base-content/30 mb-4"></i>
+      <p class="mb-4">{% translate "No monitors yet. Add your first URL and UpCheck starts watching it within a minute." %}</p>
+      <a href="{% url 'monitors:create' %}" class="btn btn-primary">{% translate "Add your first monitor" %}</a>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
