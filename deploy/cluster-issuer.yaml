@@ -1,0 +1,18 @@
+# Let's Encrypt production issuer (HTTP-01 via ingress-nginx).
+# Apply once per cluster, after cert-manager is installed:
+#   kubectl apply -f deploy/cluster-issuer.yaml
+# Replace the email with your own — Let's Encrypt sends expiry notices there.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: mitja.martini@gmail.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx
