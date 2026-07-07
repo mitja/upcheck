@@ -1050,7 +1050,7 @@ requires-dist = [
     { name = "celery-progress" },
     { name = "django", specifier = ">=6.0" },
     { name = "django-allauth", extras = ["socialaccount"], specifier = ">=65.13.0" },
-    { name = "django-anymail", extras = ["mailgun"] },
+    { name = "django-anymail", extras = ["mailjet"] },
     { name = "django-celery-beat" },
     { name = "django-environ" },
     { name = "django-htmx" },

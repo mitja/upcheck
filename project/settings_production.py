@@ -56,11 +56,11 @@ CACHES = {"default": REDIS_CACHE}  # noqa: F405
 
 PROJECT_METADATA["URL"] = env("PROJECT_URL", default="https://upcheck.paasbox.com")  # noqa: F405
 
-# Console email unless Mailgun credentials are provided.
+# Console email unless Mailjet credentials are provided.
 # See https://github.com/anymail/django-anymail for other providers.
-if env("MAILGUN_API_KEY", default=""):  # noqa: F405
-    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+if env("MAILJET_API_KEY", default=""):  # noqa: F405
+    EMAIL_BACKEND = "anymail.backends.mailjet.EmailBackend"
     ANYMAIL = {
-        "MAILGUN_API_KEY": env("MAILGUN_API_KEY"),  # noqa: F405
-        "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN", default=None),  # noqa: F405
+        "MAILJET_API_KEY": env("MAILJET_API_KEY"),  # noqa: F405
+        "MAILJET_SECRET_KEY": env("MAILJET_SECRET_KEY"),  # noqa: F405
     }
