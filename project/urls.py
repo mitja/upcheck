@@ -22,6 +22,7 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
+from apps.monitors.metrics import metrics_view
 from apps.web.sitemaps import StaticViewSitemap
 
 sitemaps = {
@@ -32,6 +33,9 @@ urlpatterns = [
     # redirect Django admin login to main login page
     path("admin/login/", RedirectView.as_view(pattern_name="account_login")),
     path("admin/", admin.site.urls),
+    # Prometheus business-KPI scrape (bearer-token gated). No trailing slash so
+    # scrapers hit it directly without an APPEND_SLASH 301.
+    path("metrics", metrics_view, name="metrics"),
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"),
     path("accounts/", include("allauth.urls")),
     path("users/", include("apps.users.urls")),

@@ -31,6 +31,9 @@ spec:
           ports:
             - name: http
               containerPort: 8000
+          # envFrom loads EVERY key of each ref as env vars, so optional keys
+          # (e.g. METRICS_TOKEN for the /metrics endpoint) need no manifest
+          # change — just add the key to the upcheck-secrets Secret.
           envFrom:
             - configMapRef: { name: upcheck-config }
             - secretRef: { name: upcheck-secrets }

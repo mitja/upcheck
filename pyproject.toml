@@ -79,6 +79,7 @@ dependencies = [
     "django-waffle",
     "djangorestframework",
     "drf-spectacular",
+    "prometheus-client>=0.25.0",
     "psycopg",
     "redis",
     "requests>=2.34.2",

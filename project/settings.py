@@ -214,6 +214,10 @@ AUTHENTICATION_BACKENDS = (
 TURNSTILE_KEY = env("TURNSTILE_KEY", default=None)
 TURNSTILE_SECRET = env("TURNSTILE_SECRET", default=None)
 
+# Bearer token guarding the /metrics business-KPI endpoint. Empty => the
+# endpoint 404s (invisible); set it to require `Authorization: Bearer <token>`.
+METRICS_TOKEN = env("METRICS_TOKEN", default="")
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/stable/topics/i18n/

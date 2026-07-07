@@ -17,6 +17,11 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # noqa: F40
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT", default=True)  # noqa: F405
+# In-cluster Prometheus scrapes hit /metrics over plain HTTP on the pod IP (no
+# X-Forwarded-Proto, Host = pod IP). Exempt it so SecurityMiddleware neither
+# 301-redirects to HTTPS nor calls get_host() (which would 400 on the pod IP);
+# the endpoint is protected by its own bearer token instead.
+SECURE_REDIRECT_EXEMPT = [r"^metrics$"]
 SESSION_COOKIE_SECURE = SECURE_SSL_REDIRECT
 CSRF_COOKIE_SECURE = SECURE_SSL_REDIRECT
 # Increase once you're confident everything works (https://stackoverflow.com/a/49168623/8207)
