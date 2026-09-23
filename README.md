@@ -69,6 +69,27 @@ and for a production cluster, plus [`scripts/kind-up.sh`](scripts/) for a
 one-command local bring-up. A full walkthrough — including creating a managed
 cluster on PAASBOX and going live with TLS — ships with the manifests.
 
+## Observability
+
+Everything is off by default, and turned on by environment variables alone:
+
+- **Traces and metrics (OpenTelemetry).** Set the standard `OTEL_*` variables with an OTLP/HTTP
+  endpoint (`OTEL_EXPORTER_OTLP_ENDPOINT`, or `..._TRACES_ENDPOINT` / `..._METRICS_ENDPOINT`), and
+  `OTEL_SERVICE_NAME`. [`project/telemetry.py`](project/telemetry.py) then instruments Django,
+  psycopg, Redis, requests and Celery. The trace context travels from beat through the queue to the
+  worker. Set up once per process after the fork: gunicorn's `post_fork`
+  ([`gunicorn.conf.py`](gunicorn.conf.py)) and Celery's `worker_process_init`/`beat_init`. Besides
+  the instrumentations' own metrics there is `upcheck.checks` (by outcome). Without an endpoint,
+  nothing is set up.
+- **Structured logs.** `LOG_FORMAT=json` writes one JSON object per line: `time`, `level`, `logger`,
+  `message`, and inside a span `trace_id`/`span_id`, so a log line links to its trace.
+- **Events.** Business events are log fields: `monitor_created`, `monitor_deleted`, `monitor_up`,
+  `monitor_down`, logged as `extra={"event": ...}`. A log pipeline can count them into metrics
+  without a code change. The paasbox platform turns them into `saas_app_events`.
+
+The paasbox `SaaSApplication` sets all of this with `telemetry: {otlp: true}` and
+`env: [{name: LOG_FORMAT, value: json}]`.
+
 ## License
 
 MIT — see [LICENSE](LICENSE). Original boilerplate copyright
