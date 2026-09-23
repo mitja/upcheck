@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 
 from django.contrib import messages
@@ -11,6 +12,8 @@ from django.views.decorators.cache import cache_page
 from .forms import MonitorForm
 from .models import Monitor
 from .plans import PRO, plan_for
+
+logger = logging.getLogger(__name__)
 
 CHART_WINDOW = timedelta(hours=24)
 CHART_MAX_POINTS = 500
@@ -40,6 +43,7 @@ def monitor_create(request):
         monitor = form.save(commit=False)
         monitor.user = request.user
         monitor.save()
+        logger.info("monitor created", extra={"event": "monitor_created", "monitor_id": monitor.pk})
         messages.success(request, _("Monitor created. The first check runs within a minute."))
         return redirect("monitors:detail", pk=monitor.pk)
     return render(
@@ -68,6 +72,7 @@ def monitor_edit(request, pk):
 def monitor_delete(request, pk):
     monitor = get_object_or_404(Monitor, pk=pk, user=request.user)
     if request.method == "POST":
+        logger.info("monitor deleted", extra={"event": "monitor_deleted", "monitor_id": monitor.pk})
         monitor.delete()
         messages.success(request, _("Monitor deleted."))
         return redirect("monitors:list")

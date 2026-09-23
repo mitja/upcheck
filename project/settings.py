@@ -409,9 +409,19 @@ LOGGING = {
             "style": "{",
             "datefmt": "%d/%b/%Y %H:%M:%S",  # match Django server time format
         },
+        # LOG_FORMAT=json: one JSON object per line. The collector turns the keys into fields, so
+        # `level`, `logger`, `trace_id` and any `extra={"event": ...}` are searchable, and an
+        # `event` becomes a metric on the platform (saas_app_events) without a deploy.
+        "json": {
+            "()": "pythonjsonlogger.json.JsonFormatter",
+            "fmt": "%(asctime)s %(levelname)s %(name)s %(message)s %(trace_id)s %(span_id)s",
+            "rename_fields": {"asctime": "time", "levelname": "level", "name": "logger"},
+            # set by project/telemetry.py inside a span
+            "defaults": {"trace_id": None, "span_id": None},
+        },
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+        "console": {"class": "logging.StreamHandler", "formatter": env("LOG_FORMAT", default="verbose")},
     },
     "loggers": {
         "django": {
@@ -425,6 +435,15 @@ LOGGING = {
         "pegasus": {
             "handlers": ["console"],
             "level": env("PEGASUS_LOG_LEVEL", default="DEBUG"),
+        },
+        "project": {
+            "handlers": ["console"],
+            "level": env("PROJECT_LOG_LEVEL", default="INFO"),
+        },
+        "celery": {
+            "handlers": ["console"],
+            "level": env("CELERY_LOG_LEVEL", default="INFO"),
+            "propagate": False,
         },
     },
 }
