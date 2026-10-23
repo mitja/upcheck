@@ -1,0 +1,37 @@
+# Celery worker: runs the HTTP checks. Threads pool: the checks are I/O-bound (deploy/base/worker.yaml).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels: {app: upcheck, component: worker}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: worker}
+  template:
+    metadata:
+      labels: {app: upcheck, component: worker}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: worker
+          image: ghcr.io/mitja/upcheck@sha256:40b4b2a538a1f564852f17009274bb6c57df3a35c81b99126008135b3f714c12
+          command:
+            - sh
+            - -c
+            - >-
+              . /vaicoa/vaicoa-env.sh &&
+              exec celery -A project worker -l INFO --pool threads --concurrency "$CELERY_CONCURRENCY"
+          envFrom:
+            - configMapRef: {name: upcheck-config}
+            - configMapRef: {name: upcheck-vaicoa}
+            - secretRef: {name: upcheck-secrets}
+          resources:
+            limits: {memory: 512Mi}
+          volumeMounts:
+            - {name: entrypoint, mountPath: /vaicoa, readOnly: true}
+      volumes:
+        - name: entrypoint
+          configMap: {name: upcheck-entrypoint}

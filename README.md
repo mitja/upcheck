@@ -69,6 +69,86 @@ and for a production cluster, plus [`scripts/kind-up.sh`](scripts/) for a
 one-command local bring-up. A full walkthrough — including creating a managed
 cluster on PAASBOX and going live with TLS — ships with the manifests.
 
+## Deploy on Vaicoa
+
+[`deploy/vaicoa/`](deploy/vaicoa/) is an environment directory for a
+[Vaicoa](https://vaicoa.com) Podman host: the hub polls this repository's
+branch every minute and sends the directory's files to the host, whose agent
+renders one Quadlet `.kube` unit per file. It is not Kubernetes; the format is
+Vaicoa's [environment format](https://vaicoa.com/docs/reference/environment-format/).
+
+| file | runs |
+| --- | --- |
+| `postgres.yaml` | PostgreSQL 17, data in the claim `upcheck-postgres` (replaces CloudNativePG) |
+| `redis.yaml` | Redis, AOF in the claim `upcheck-redis` |
+| `web.yaml` | gunicorn; its init container runs `migrate` and `bootstrap_celery_tasks` before every start |
+| `worker.yaml`, `beat.yaml` | the Celery worker and beat |
+| `caddy.yaml` | Caddy on the host's ports 80 and 443: TLS with an automatic certificate for the environment's URL |
+| `config.yaml` | the settings, and `vaicoa-env.sh`, which web, worker and beat source before their command |
+| `.vaicoa/web.yaml` | the entry point a twin's proxy uses (port 80) |
+
+How it differs from the Kubernetes manifests:
+
+- **Names.** The environment must be called `upcheck`: the YAML names the
+  agent's ConfigMap `upcheck-vaicoa` and the secret `upcheck-secrets`. Pods
+  reach each other by pod name (`postgres-pod`, `redis-pod`, `web-pod`), since
+  Podman ignores Services.
+- **Migrations** run in web's init container, not as a Job: on a Podman host a
+  Job is a pod that ends, which the agent counts as unhealthy.
+- **Hosts and TLS** come from the agent's ConfigMap: `vaicoa-env.sh` derives
+  `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` and `PROJECT_URL` from `VAI_BASE_URL`,
+  and `DATABASE_URL` from `POSTGRES_PASSWORD`. With `VAI_TLS=self` Caddy gets
+  the certificate for `VAI_BASE_URL` (its DNS record must point at the host);
+  a twin (`VAI_TLS=hub`) serves plain HTTP on port 80 behind the hub, and Django
+  does not redirect to HTTPS there.
+- **Images** are pinned by digest: the agent refuses a tag. A new release is a
+  commit that changes the digests (`ghcr.io/mitja/upcheck@sha256:…`, the image
+  CI pushes as `sha-<commit>`).
+- **Health** is a `livenessProbe` with `exec`: Podman runs probes inside the
+  container, and the image has no curl.
+
+### 1. Point a host at the directory
+
+```text
+$ vai host create upcheck-1 --env production
+$ vai api PUT /clusters/<host id>/environment '{"name": "upcheck", "repository": "https://github.com/mitja/upcheck.git", "branch": "main", "path": "deploy/vaicoa"}'
+```
+
+### 2. Encrypt the secrets
+
+`secrets.prod.enc.env.example` lists the keys. Fill in a copy outside the
+repository and encrypt it to the recipients the hub made for the environment:
+
+```text
+$ vai api GET /clusters/<host id>/environment      # recipients.cluster and recipients.twins
+$ sops --encrypt --age <recipients.cluster> --input-type dotenv --output-type dotenv secrets.prod.env > deploy/vaicoa/secrets.prod.enc.env
+$ sops --encrypt --age <recipients.twins>   --input-type dotenv --output-type dotenv secrets.twin.env > deploy/vaicoa/secrets.twin.enc.env
+```
+
+Commit only the `.enc.env` files. Use a different `POSTGRES_PASSWORD` and
+`SECRET_KEY` for twins.
+
+### 3. DNS and the first start
+
+Point the environment's host name at the server and commit. Within about a
+minute the host pulls the images, starts Postgres and Redis, migrates, and
+Caddy fetches the certificate. `vai api GET /clusters/<host id>/environment`
+shows the revision and each unit's health.
+
+There is no `.vaicoa/seed.yaml`: a seed Job runs before any unit starts, on an
+empty data volume, so Postgres is not running and the schema does not exist
+yet. A twin without a seed starts with an empty database and migrates it.
+
+### Server size
+
+Measured on a Vaicoa Podman host (2026-10-24): a **cpx12** (1 vCPU, 2 GB).
+The pods hold ~530 MiB idle, with 50 monitors checked every minute, and
+~595 MiB at peak. The host kept ~870 MiB available, with no swap and no OOM
+kill. The cached public status page served 300 req/s at p95 65 ms. The
+logged-in monitor list, rendered on every request, saturated the vCPU at
+~33 req/s (p95 0.9 s). A cpx02 (1 GB) is too small for this stack. For more
+uncached throughput, take a cpx22 (2 vCPU).
+
 ## Observability
 
 Everything is off by default, and turned on by environment variables alone:

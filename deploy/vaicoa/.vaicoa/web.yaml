@@ -1,0 +1,4 @@
+# The environment's web entry point for the twin proxy: Caddy's port 80 (caddy.yaml). A twin gets
+# VAI_TLS=hub and serves plain HTTP there; the hub terminates TLS.
+entrypoints:
+  - port: 80

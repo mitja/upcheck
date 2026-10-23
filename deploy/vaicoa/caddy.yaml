@@ -1,0 +1,54 @@
+# Caddy on the host's ports 80 and 443: the environment's entry point (.vaicoa/web.yaml). With
+# VAI_TLS=self and an https:// VAI_BASE_URL it gets the certificate itself (ACME, HTTP-01: the
+# name's DNS record must point at the host); otherwise it serves plain HTTP on :80, which is what a
+# twin does behind the hub's proxy. Its certificates live in the claim upcheck-caddy.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy
+  labels: {app: upcheck, component: caddy}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: caddy}
+  template:
+    metadata:
+      labels: {app: upcheck, component: caddy}
+    spec:
+      containers:
+        - name: caddy
+          image: docker.io/library/caddy:2-alpine@sha256:eb4d35b7452d1ab6171fbdbe8d9275b2301dad6dad92115d91e19fb9b24d510f
+          command:
+            - sh
+            - -c
+            - >-
+              case "$VAI_TLS:$VAI_BASE_URL" in
+              self:https://*) SITE="$VAI_BASE_URL" ;;
+              *) SITE=":80" ;;
+              esac;
+              export SITE;
+              exec caddy run --config /etc/caddy/Caddyfile --adapter caddyfile
+          envFrom:
+            - configMapRef: {name: upcheck-vaicoa}
+          ports:
+            - {containerPort: 80, hostPort: 80}
+            - {containerPort: 443, hostPort: 443}
+          resources:
+            limits: {memory: 128Mi}
+          volumeMounts:
+            - {name: caddyfile, mountPath: /etc/caddy, readOnly: true}
+            - {name: data, mountPath: /data}
+      volumes:
+        - name: caddyfile
+          configMap: {name: upcheck-caddyfile}
+        - name: data
+          persistentVolumeClaim: {claimName: upcheck-caddy}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: upcheck-caddy
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: 64Mi}

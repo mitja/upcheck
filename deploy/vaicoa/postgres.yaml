@@ -1,0 +1,50 @@
+# PostgreSQL in a container, its data in the claim upcheck-postgres (a directory of the environment's
+# data volume, which Vaicoa backs up and snapshots). Replaces the CloudNativePG Cluster of deploy/base.
+# The superuser is POSTGRES_USER with the SOPS file's POSTGRES_PASSWORD; initdb runs on the first start.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  labels: {app: upcheck, component: postgres}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: postgres}
+  template:
+    metadata:
+      labels: {app: upcheck, component: postgres}
+    spec:
+      containers:
+        - name: postgres
+          image: docker.io/library/postgres:17-alpine@sha256:eee6c6e1b0894fa4fe0075eb054af9fd1cf39a35321c2d4110626cfe506411fb
+          env:
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+            - name: POSTGRES_USER
+              valueFrom: {configMapKeyRef: {name: upcheck-config, key: POSTGRES_USER}}
+            - name: POSTGRES_DB
+              valueFrom: {configMapKeyRef: {name: upcheck-config, key: POSTGRES_DB}}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: upcheck-secrets, key: POSTGRES_PASSWORD}}
+          ports:
+            - containerPort: 5432
+          livenessProbe:
+            exec:
+              command: [pg_isready, -U, upcheck, -d, upcheck, -h, 127.0.0.1]
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            limits: {memory: 512Mi}
+          volumeMounts:
+            - {name: data, mountPath: /var/lib/postgresql/data}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: upcheck-postgres}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: upcheck-postgres
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: 2Gi}

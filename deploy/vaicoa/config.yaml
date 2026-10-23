@@ -1,0 +1,71 @@
+# The environment's configuration (not secret). The environment is called `upcheck`: the agent's
+# ConfigMap is then `upcheck-vaicoa` (VAI_PURPOSE, VAI_TLS, VAI_BASE_URL) and the SOPS file's values
+# are the Podman secret `upcheck-secrets`. A different environment name changes those two names in
+# every file of this directory.
+#
+# Podman ignores Services: pods reach each other by pod name, `<deployment>-pod`, on Podman's
+# default kube network (postgres-pod, redis-pod, web-pod).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upcheck-config
+data:
+  DJANGO_SETTINGS_MODULE: project.settings_production
+  REDIS_URL: redis://redis-pod:6379/0
+  POSTGRES_HOST: postgres-pod
+  POSTGRES_DB: upcheck
+  POSTGRES_USER: upcheck
+  LOG_FORMAT: json
+  GUNICORN_WORKERS: "2"
+  CELERY_CONCURRENCY: "16"
+---
+# The app containers source this before their command (web, worker, beat). It derives what Kubernetes
+# gets from the Ingress and CloudNativePG: DATABASE_URL from the SOPS file's POSTGRES_PASSWORD, and
+# ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS and the HTTPS redirect from the agent's VAI_BASE_URL and VAI_TLS.
+# VAI_TLS=self: Caddy terminates TLS for VAI_BASE_URL (production, staging). VAI_TLS=hub: the hub
+# terminates TLS and the environment serves plain HTTP (a twin), so Django must not redirect.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upcheck-entrypoint
+data:
+  vaicoa-env.sh: |
+    host=${VAI_BASE_URL#*://}; host=${host%%/*}; host=${host%%:*}
+    export ALLOWED_HOSTS="${host:+$host,}localhost,127.0.0.1,web-pod"
+    export CSRF_TRUSTED_ORIGINS="${VAI_BASE_URL}"
+    if [ -n "$VAI_BASE_URL" ]; then export PROJECT_URL="$VAI_BASE_URL"; fi
+    case "$VAI_TLS:$VAI_BASE_URL" in
+      self:https://*) export SECURE_SSL_REDIRECT=true ;;
+      *) export SECURE_SSL_REDIRECT=false ;;
+    esac
+    export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}"
+  # the web pod's health check: the start page, as Caddy would ask for it
+  healthcheck.py: |
+    import os, urllib.request
+    req = urllib.request.Request("http://127.0.0.1:8000/", headers={"Host": "localhost", "X-Forwarded-Proto": "https"})
+    urllib.request.urlopen(req, timeout=5)
+  # waits up to two minutes for Postgres (the pods start in any order)
+  wait-for-postgres.py: |
+    import os, socket, sys, time
+    end = time.time() + 120
+    while True:
+        try:
+            socket.create_connection((os.environ["POSTGRES_HOST"], 5432), timeout=3).close()
+            break
+        except OSError as e:
+            if time.time() > end:
+                sys.exit(f"postgres at {os.environ['POSTGRES_HOST']}:5432 not reachable: {e}")
+            time.sleep(2)
+---
+# Caddy: TLS for VAI_BASE_URL with an automatic certificate when VAI_TLS is self, plain HTTP on :80
+# otherwise (a twin behind the hub's proxy, or no base URL known yet).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upcheck-caddyfile
+data:
+  Caddyfile: |
+    {$SITE} {
+      encode gzip
+      reverse_proxy web-pod:8000
+    }
