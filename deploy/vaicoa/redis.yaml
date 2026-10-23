@@ -1,0 +1,42 @@
+# Redis: Celery's broker and result backend and Django's cache, AOF in the claim upcheck-redis so
+# queued tasks survive a restart.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels: {app: upcheck, component: redis}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: redis}
+  template:
+    metadata:
+      labels: {app: upcheck, component: redis}
+    spec:
+      containers:
+        - name: redis
+          image: docker.io/library/redis:7-alpine@sha256:57e4255cc971b1c8d6f8a6ca283ac01bc3ecdd914273ef6bfaede87aaecd6541
+          args: [redis-server, --appendonly, "yes"]
+          ports:
+            - containerPort: 6379
+          livenessProbe:
+            exec:
+              command: [redis-cli, ping]
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          resources:
+            limits: {memory: 256Mi}
+          volumeMounts:
+            - {name: data, mountPath: /data}
+      volumes:
+        - name: data
+          persistentVolumeClaim: {claimName: upcheck-redis}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: upcheck-redis
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests: {storage: 1Gi}

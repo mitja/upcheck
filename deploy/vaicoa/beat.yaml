@@ -1,0 +1,39 @@
+# Celery beat: the scheduler (DatabaseScheduler reads the PeriodicTask rows that web's init container
+# writes with bootstrap_celery_tasks). One only: a Podman host runs one pod per Deployment anyway.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: beat
+  labels: {app: upcheck, component: beat}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: beat}
+  template:
+    metadata:
+      labels: {app: upcheck, component: beat}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: beat
+          image: ghcr.io/mitja/upcheck@sha256:40b4b2a538a1f564852f17009274bb6c57df3a35c81b99126008135b3f714c12
+          command:
+            - sh
+            - -c
+            - >-
+              . /vaicoa/vaicoa-env.sh &&
+              exec celery -A project beat -l INFO
+              --scheduler django_celery_beat.schedulers:DatabaseScheduler
+          envFrom:
+            - configMapRef: {name: upcheck-config}
+            - configMapRef: {name: upcheck-vaicoa}
+            - secretRef: {name: upcheck-secrets}
+          resources:
+            limits: {memory: 384Mi}
+          volumeMounts:
+            - {name: entrypoint, mountPath: /vaicoa, readOnly: true}
+      volumes:
+        - name: entrypoint
+          configMap: {name: upcheck-entrypoint}

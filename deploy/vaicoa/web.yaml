@@ -1,0 +1,67 @@
+# Web: gunicorn + WhiteNoise. The migrations run as the pod's init container, not as a Job: a Job in
+# the environment would be a pod that ends, and its unit then counts as unhealthy and restarts. The
+# init container runs before gunicorn whenever the unit (re)starts, i.e. on every revision that
+# changes this file; `migrate` and `bootstrap_celery_tasks` are idempotent.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  labels: {app: upcheck, component: web}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: upcheck, component: web}
+  template:
+    metadata:
+      labels: {app: upcheck, component: web}
+    spec:
+      securityContext:
+        runAsUser: 1000 # the image's `django` user
+        runAsGroup: 1000
+      initContainers:
+        - name: migrate
+          image: ghcr.io/mitja/upcheck@sha256:40b4b2a538a1f564852f17009274bb6c57df3a35c81b99126008135b3f714c12
+          command:
+            - sh
+            - -c
+            - >-
+              . /vaicoa/vaicoa-env.sh &&
+              python /vaicoa/wait-for-postgres.py &&
+              python manage.py migrate --noinput &&
+              python manage.py bootstrap_celery_tasks
+          envFrom:
+            - configMapRef: {name: upcheck-config}
+            - configMapRef: {name: upcheck-vaicoa}
+            - secretRef: {name: upcheck-secrets}
+          volumeMounts:
+            - {name: entrypoint, mountPath: /vaicoa, readOnly: true}
+      containers:
+        - name: web
+          image: ghcr.io/mitja/upcheck@sha256:40b4b2a538a1f564852f17009274bb6c57df3a35c81b99126008135b3f714c12
+          command:
+            - sh
+            - -c
+            - >-
+              . /vaicoa/vaicoa-env.sh &&
+              exec gunicorn project.wsgi:application --bind 0.0.0.0:8000
+              --workers "$GUNICORN_WORKERS" --threads 4 --timeout 60
+              --access-logfile - --error-logfile -
+          envFrom:
+            - configMapRef: {name: upcheck-config}
+            - configMapRef: {name: upcheck-vaicoa}
+            - secretRef: {name: upcheck-secrets}
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            exec:
+              command: [python, /vaicoa/healthcheck.py]
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 10
+          resources:
+            limits: {memory: 512Mi}
+          volumeMounts:
+            - {name: entrypoint, mountPath: /vaicoa, readOnly: true}
+      volumes:
+        - name: entrypoint
+          configMap: {name: upcheck-entrypoint}
