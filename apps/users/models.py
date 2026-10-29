@@ -1,10 +1,10 @@
-import hashlib
 import uuid
 from functools import cached_property
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.templatetags.static import static
 
 from apps.users.helpers import validate_profile_picture
 
@@ -34,12 +34,10 @@ class CustomUser(AbstractUser):
         if self.avatar:
             return self.avatar.url
         else:
-            return f"https://www.gravatar.com/avatar/{self.gravatar_id}?s=128&d=identicon"
-
-    @property
-    def gravatar_id(self) -> str:
-        # https://en.gravatar.com/site/implement/hash/
-        return hashlib.md5(self.email.lower().strip().encode("utf-8")).hexdigest()
+            # Not Gravatar (Pegasus' default): its URL carries an MD5 of the
+            # email, so every page showing an avatar would send a stable
+            # identifier to a third party (GDPR Art. 13/44).
+            return static("images/default-avatar.svg")
 
     @cached_property
     def has_verified_email(self):
