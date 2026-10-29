@@ -1,4 +1,5 @@
 from allauth.account.models import EmailAddress
+from django.templatetags.static import static
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -62,3 +63,14 @@ class ProfileEmailChangeTest(TestCase):
         self.assertFalse(new_address.verified)
         self.assertFalse(new_address.primary)
         self.assertEqual(EmailAddress.objects.get(user=self.user, primary=True).email, "old@example.com")
+
+
+class ProfileAvatarTest(TestCase):
+    def test_profile_page_shows_local_default_avatar(self):
+        # No Gravatar fallback: the browser must not be sent to gravatar.com
+        # with a hash of the user's email.
+        user = CustomUser.objects.create(username="ada@example.com", email="ada@example.com")
+        self.client.force_login(user)
+        response = self.client.get(reverse("users:user_profile"))
+        self.assertContains(response, f'<img class="avatar" src="{static("images/default-avatar.svg")}">', html=True)
+        self.assertNotContains(response, "gravatar")
